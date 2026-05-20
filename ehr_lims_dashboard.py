@@ -418,6 +418,17 @@ n_fac = dff["Facility"].nunique()
 capture_rate = round((total_ehr / total_paper) * 100, 1) if total_paper > 0 else 0
 submit_rate = round((total_shr / total_ehr) * 100, 1) if total_ehr > 0 else 0
 # ─────────────────────────────────────────────────────────────────────────────
+# Load MoHCC logo as base64 so it works offline inside components.html
+# ─────────────────────────────────────────────────────────────────────────────
+import base64 as _b64, os as _os
+_logo_path = "logo.png"
+if _os.path.exists(_logo_path):
+    with open(_logo_path, "rb") as _lf:
+        _logo_src = "data:image/png;base64," + _b64.b64encode(_lf.read()).decode()
+else:
+    _logo_src = ""
+
+# ─────────────────────────────────────────────────────────────────────────────
 # TOP SECTION — Animated Pipeline Dashboard (PowerPoint Style)
 # ─────────────────────────────────────────────────────────────────────────────
 components.html(
@@ -523,7 +534,11 @@ body {{ background: transparent; padding: 5px; }}
 <div class="dashboard-wrapper">
     <div class="header">
         <div class="h-left">
-            <div class="h-icon">🏥</div>
+            <div class="h-icon" style="background:white;padding:3px;border:1px solid #E2E8F0;">
+                    <img src="{_logo_src}"
+                         style="width:100%;height:100%;object-fit:contain;border-radius:8px;"
+                         alt="MoHCC Logo"/>
+                </div>
             <div>
                 <div class="h-title">EHR-LIMS · Viral Load Validation</div>
                 <div class="h-sub">Data capture & leakage analysis across activated facilities</div>

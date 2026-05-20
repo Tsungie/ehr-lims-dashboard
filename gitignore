@@ -74,3 +74,10 @@ logs/
 .pytest_cache/
 .coverage
 htmlcov/
+
+.history/
+.venv/
+venv/
+env/
+*.env
+.env

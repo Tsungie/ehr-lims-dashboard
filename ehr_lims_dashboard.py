@@ -490,11 +490,13 @@ body {{ background: transparent; padding: 5px; }}
 .gap-pill {{ padding: 6px 14px; border-radius: 14px; font-size: 12px; font-weight: 700; margin-bottom: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }}
 .pill-orange {{ background: #FFF5EC; color: #D17C32; border: 1px solid #FDE5CD; }}
 .pill-red {{ background: #FEF0ED; color: #B94B39; border: 1px solid #FBD9D2; }}
+.pill-blue {{ background: #EBF1FB; color: #2E5FA3; border: 1px solid #B3C8EC; }}
 .gap-val {{ font-size: 26px; font-weight: 800; color: #0F172A; line-height: 1.1; margin-top: 2px; }}
 
 .drop-val {{ font-size: 22px; font-weight: 800; position: absolute; }}
 .drop-orange {{ color: #DC9F5D; }}
 .drop-red {{ color: #CA6C5B; }}
+.drop-blue {{ color: #2E5FA3; font-size: 22px; font-weight: 800; position: absolute; }}
 
 /* ── Icons ── */
 .icon-box {{
@@ -541,69 +543,109 @@ body {{ background: transparent; padding: 5px; }}
     </div>
 
     <div class="pipeline-area">
-        
-        <svg width="100%" height="100%" viewBox="0 0 1000 350" preserveAspectRatio="xMidYMid meet" style="position: absolute; top: 0; left: 0; z-index: 1;">
-            
-            <path class="anim-item anim-slide-right step-1" d="M 10,140 L 190,140 L 220,170 L 190,200 L 10,200 L 40,170 Z" fill="#769D81" />
-            
-            <path class="anim-item anim-drop-down step-2" d="M 130,200 C 180,200 220,270 260,270 L 260,260 L 290,277.5 L 260,295 L 260,285 C 200,285 160,200 110,200 Z" fill="#DC9F5D" />
-            
-            <path class="anim-item anim-slide-right step-3" d="M 300,140 L 480,140 L 510,170 L 480,200 L 300,200 L 330,170 Z" fill="#769D81" />
-            
-            <path class="anim-item anim-slide-right step-4" d="M 540,140 L 720,140 L 750,170 L 720,200 L 540,200 L 570,170 Z" fill="#CA6C5B" />
-            <path class="anim-item anim-drop-down step-4" d="M 610,200 C 660,200 700,270 740,270 L 740,260 L 770,277.5 L 740,295 L 740,285 C 680,285 640,200 590,200 Z" fill="#CA6C5B" />
-            
-            <path class="anim-item anim-slide-right step-5" d="M 780,140 L 960,140 L 990,170 L 960,200 L 780,200 L 810,170 Z" fill="#5072B2" />
-            
+
+        <!-- ══ 3 ARROWS — text inside SVG ══ -->
+        <svg width="100%" height="100%" viewBox="0 0 1000 310"
+             preserveAspectRatio="xMidYMid meet"
+             style="position:absolute;top:0;left:0;z-index:1;">
+
+            <!-- ── Arrow 1: PAPER (forest green) ── -->
+            <g class="anim-item anim-slide-right step-1">
+                <path d="M 8,132 L 294,132 L 328,168 L 294,204 L 8,204 L 42,168 Z" fill="#1F7A4A"/>
+                <text x="168" y="156" text-anchor="middle" fill="white"
+                      font-size="10.5" font-weight="800" font-family="Inter,sans-serif"
+                      letter-spacing="0.3">TOTAL VL SAMPLES</text>
+                <text x="168" y="171" text-anchor="middle" fill="white"
+                      font-size="10.5" font-weight="800" font-family="Inter,sans-serif"
+                      letter-spacing="0.3">COLLECTED AT FACILITY</text>
+            </g>
+
+            <!-- ── Gap 1 branch (amber) ── -->
+            <path class="anim-item anim-drop-down step-2"
+                  d="M 200,204 C 248,204 290,262 330,262 L 330,253 L 362,270 L 330,287 L 330,278 C 270,278 228,204 178,204 Z"
+                  fill="#D4841A"/>
+
+            <!-- ── Arrow 2: EHR (sky teal) ── -->
+            <g class="anim-item anim-slide-right step-3">
+                <path d="M 358,132 L 644,132 L 678,168 L 644,204 L 358,204 L 392,168 Z" fill="#0891B2"/>
+                <text x="518" y="163" text-anchor="middle" fill="white"
+                      font-size="11" font-weight="800" font-family="Inter,sans-serif"
+                      letter-spacing="0.4">CAPTURED IN EHR</text>
+                <text x="518" y="179" text-anchor="middle" fill="rgba(255,255,255,0.8)"
+                      font-size="9" font-family="Inter,sans-serif">Orders captured</text>
+            </g>
+
+            <!-- ── Gap 2 branch (slate blue) ── -->
+            <path class="anim-item anim-drop-down step-4"
+                  d="M 558,204 C 606,204 648,262 688,262 L 688,253 L 720,270 L 688,287 L 688,278 C 628,278 586,204 538,204 Z"
+                  fill="#2E5FA3"/>
+
+            <!-- ── Arrow 3: SHR SUBMISSION (slate blue, flat right end) ── -->
+            <g class="anim-item anim-slide-right step-4">
+                <path d="M 706,132 L 992,132 L 992,204 L 706,204 L 740,168 Z" fill="#2E5FA3"/>
+                <text x="849" y="163" text-anchor="middle" fill="white"
+                      font-size="11" font-weight="800" font-family="Inter,sans-serif"
+                      letter-spacing="0.4">SHR SUBMISSION</text>
+                <text x="849" y="179" text-anchor="middle" fill="rgba(255,255,255,0.8)"
+                      font-size="9" font-family="Inter,sans-serif">EHR → SHR pipeline</text>
+            </g>
+
         </svg>
 
-        <div class="text-block anim-item anim-fade-up step-1" style="left: 25px; width: 190px; top: 30px;">
-            <div class="node-val val-teal">{int(total_paper):,}</div>
-            <div class="node-lbl">PAPER SAMPLES</div>
-            <div class="node-sub">(Total collected)</div>
-        </div>
-        <div class="icon-box anim-item anim-pop step-1" style="left: 98px; top: 148px; color: #769D81;">📄</div>
-        <div class="text-block anim-item anim-fade-up step-1" style="left: 25px; width: 190px; top: 230px;">
-            <div class="node-lbl">PAPER SAMPLES</div>
-            <div class="node-sub">(Total collected)</div>
+        <!-- ── 12,675 above Paper ── -->
+        <div class="text-block anim-item anim-fade-up step-1"
+             style="left:8px;width:320px;top:26px;text-align:center;">
+            <div class="node-val val-teal" id="v-paper">0</div>
         </div>
 
-        <div class="text-block anim-item anim-fade-up step-2" style="left: 155px; width: 220px; top: 20px;">
-            <div class="gap-pill pill-orange">GAP 1: Paper vs EHR - {gap1_pct}% Loss</div>
-            <div class="gap-val">{int(gap1_tot):,}</div>
-            <div class="node-sub">Not recorded in EHR</div>
+        <!-- ── Gap 1 tip: number + space + label + pill ── -->
+        <div class="anim-item anim-drop-down step-2"
+             style="position:absolute;left:362px;top:258px;text-align:left;">
+            <div style="font-size:24px;font-weight:800;color:#D4841A;line-height:1.1;"
+                 id="v-gap1-drop">0</div>
+            <div id="gap1-sub"
+                 style="opacity:0;transform:translateY(6px);
+                        transition:opacity 0.5s ease,transform 0.5s ease;
+                        margin-top:6px;">
+                <div style="font-size:11px;font-weight:700;color:#A0610C;white-space:nowrap;">
+                    Not recorded in EHR
+                </div>
+                <div class="gap-pill pill-orange" style="margin-top:6px;display:inline-block;">
+                    GAP 1 · {gap1_pct}% Loss
+                </div>
+            </div>
         </div>
-        <div class="drop-val drop-orange anim-item anim-drop-down step-2" style="left: 305px; top: 265px;">{int(gap1_tot):,}</div>
 
-        <div class="text-block anim-item anim-fade-up step-3" style="left: 315px; width: 190px; top: 30px;">
-            <div class="node-val val-teal">{int(total_ehr):,}</div>
-            <div class="node-lbl">CAPTURED IN EHR</div>
-            <div class="node-sub">(Orders captured)</div>
-        </div>
-        <div class="icon-box anim-item anim-pop step-3" style="left: 388px; top: 148px; color: #769D81;">💻</div>
-        <div class="text-block anim-item anim-fade-up step-3" style="left: 315px; width: 190px; top: 230px;">
-            <div class="node-lbl">CAPTURED IN EHR</div>
-            <div class="node-sub">(Orders captured)</div>
+        <!-- ── 11,730 above EHR ── -->
+        <div class="text-block anim-item anim-fade-up step-3"
+             style="left:358px;width:286px;top:26px;text-align:center;">
+            <div class="node-val" style="font-size:32px;font-weight:800;color:#0369A1;" id="v-ehr">0</div>
         </div>
 
-        <div class="text-block anim-item anim-fade-up step-4" style="left: 540px; width: 220px; top: 20px;">
-            <div class="gap-pill pill-red">GAP 2: EHR vs SHR - {gap2_pct}% Loss</div>
-            <div class="gap-val">{int(gap2_tot):,}</div>
-            <div class="node-sub">Not submitted to SHR</div>
+        <!-- ── Gap 2 tip: number + space + label + pill ── -->
+        <div class="anim-item anim-drop-down step-4"
+             style="position:absolute;left:724px;top:258px;text-align:left;">
+            <div style="font-size:24px;font-weight:800;color:#2E5FA3;line-height:1.1;"
+                 id="v-gap2-drop">0</div>
+            <div id="gap2-sub"
+                 style="opacity:0;transform:translateY(6px);
+                        transition:opacity 0.5s ease,transform 0.5s ease;
+                        margin-top:6px;">
+                <div style="font-size:11px;font-weight:700;color:#2E5FA3;white-space:nowrap;">
+                    Not submitted to SHR
+                </div>
+                <div class="gap-pill pill-blue" style="margin-top:6px;display:inline-block;">
+                    GAP 2 · {gap2_pct}% Loss
+                </div>
+            </div>
         </div>
-        <div class="drop-val drop-red anim-item anim-drop-down step-4" style="left: 785px; top: 265px;">{int(gap2_tot):,}</div>
 
-        <div class="text-block anim-item anim-fade-up step-5" style="left: 795px; width: 190px; top: 30px;">
-            <div class="node-val val-blue">{int(total_shr):,}</div>
-            <div class="node-lbl">SUBMITTED TO SHR</div>
-            <div class="node-sub">(Samples submitted)</div>
+        <!-- ── 6,519 above SHR ── -->
+        <div class="text-block anim-item anim-fade-up step-5"
+             style="left:706px;width:286px;top:26px;text-align:center;">
+            <div class="node-val val-blue" id="v-shr">0</div>
         </div>
-        <div class="icon-box anim-item anim-pop step-5" style="left: 868px; top: 148px; color: #5072B2;">🏥</div>
-        <div class="text-block anim-item anim-fade-up step-5" style="left: 795px; width: 190px; top: 230px;">
-            <div class="node-lbl">SUBMITTED TO SHR</div>
-            <div class="node-sub">(Samples submitted)</div>
-        </div>
-        
+
     </div>
 
     <div class="kpi-row anim-item anim-fade-up step-6">
@@ -648,28 +690,71 @@ body {{ background: transparent; padding: 5px; }}
 </div>
 
 <script>
-function startAnimation() {{
-    // Hide all items instantly
-    document.querySelectorAll('.anim-item').forEach(el => el.classList.remove('visible'));
-    
-    // Staggered PowerPoint timeline (in milliseconds)
-    const timeline = [
-        {{ step: 1, delay: 200 }},   // 1. Enter Paper 
-        {{ step: 2, delay: 1300 }},  // 2. Enter Gap 1 
-        {{ step: 3, delay: 2400 }},  // 3. Enter EHR 
-        {{ step: 4, delay: 3500 }},  // 4. Enter Gap 2
-        {{ step: 5, delay: 4600 }},  // 5. Enter SHR 
-        {{ step: 6, delay: 5600 }}   // 6. Enter KPI metrics row
-    ];
+var VALS = {{
+  paper: {int(total_paper)},
+  ehr:   {int(total_ehr)},
+  shr:   {int(total_shr)},
+  gap1:  {int(gap1_tot)},
+  gap2:  {int(gap2_tot)}
+}};
 
-    timeline.forEach(t => {{
-        setTimeout(() => {{
-            document.querySelectorAll('.step-' + t.step).forEach(el => el.classList.add('visible'));
-        }}, t.delay);
-    }});
+function countUp(id, target, dur, delay) {{
+  setTimeout(function() {{
+    var el = document.getElementById(id);
+    if (!el) return;
+    var t0 = performance.now();
+    (function tick(now) {{
+      var p = Math.min((now - t0) / dur, 1), e = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.floor(e * target).toLocaleString();
+      if (p < 1) requestAnimationFrame(tick);
+      else el.textContent = target.toLocaleString();
+    }})(performance.now());
+  }}, delay);
 }}
 
-// Run the sequence automatically on page load
+function revealSub(id, delay) {{
+  setTimeout(function() {{
+    var el = document.getElementById(id);
+    if (el) {{ el.style.opacity = '1'; el.style.transform = 'translateY(0)'; }}
+  }}, delay);
+}}
+
+function startAnimation() {{
+  document.querySelectorAll('.anim-item').forEach(el => el.classList.remove('visible'));
+  ['gap1-sub','gap2-sub'].forEach(function(id) {{
+    var el = document.getElementById(id);
+    if (el) {{ el.style.opacity = '0'; el.style.transform = 'translateY(8px)'; }}
+  }});
+  ['v-paper','v-ehr','v-shr','v-gap1-drop','v-gap2-drop'].forEach(function(id) {{
+    var el = document.getElementById(id); if (el) el.textContent = '0';
+  }});
+
+  const timeline = [
+    {{ step: 1, delay: 200  }},
+    {{ step: 2, delay: 1300 }},
+    {{ step: 3, delay: 2400 }},
+    {{ step: 4, delay: 3500 }},
+    {{ step: 5, delay: 4600 }},
+    {{ step: 6, delay: 5600 }}
+  ];
+  timeline.forEach(t => {{
+    setTimeout(() => {{
+      document.querySelectorAll('.step-' + t.step).forEach(el => el.classList.add('visible'));
+    }}, t.delay);
+  }});
+
+  // Count-up all values
+  countUp('v-paper',     VALS.paper, 900, 300);
+  countUp('v-gap1-drop', VALS.gap1,  700, 1400);
+  countUp('v-ehr',       VALS.ehr,   900, 2500);
+  countUp('v-gap2-drop', VALS.gap2,  700, 3600);
+  countUp('v-shr',       VALS.shr,   900, 4700);
+
+  // Reveal sub-text AFTER number finishes
+  revealSub('gap1-sub', 2150);
+  revealSub('gap2-sub', 4350);
+}}
+
 window.addEventListener('DOMContentLoaded', startAnimation);
 </script>
 """,

@@ -10,14 +10,16 @@ import io, time, requests
 # ─────────────────────────────────────────────────────────────────────────────
 st.set_page_config(
     page_title="EHR–LIMS Validation Dashboard",
-    layout="wide", page_icon="🏥",
-    initial_sidebar_state="expanded"
+    layout="wide",
+    page_icon="🔬",
+    initial_sidebar_state="expanded",
 )
 
 # ─────────────────────────────────────────────────────────────────────────────
 # GLOBAL STYLES
 # ─────────────────────────────────────────────────────────────────────────────
-st.markdown("""
+st.markdown(
+    """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -168,26 +170,33 @@ html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
 .drill-stat .ds-lbl { font-size: 11px; color: #94A3B8; font-weight: 500; }
 .drill-stat .ds-val { font-size: 18px; font-weight: 700; color: #0D1B2A; margin-top: 2px; }
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # CONSTANTS
 # ─────────────────────────────────────────────────────────────────────────────
-MONTHS = ['Oct-25','Nov-25','Dec-25','Jan-26','Feb-26','Mar-26','Apr-26']
+MONTHS = ["Oct-25", "Nov-25", "Dec-25", "Jan-26", "Feb-26", "Mar-26", "Apr-26"]
 MONTH_DATES = {
-    'Oct-25': datetime(2025,10,1), 'Nov-25': datetime(2025,11,1),
-    'Dec-25': datetime(2025,12,1), 'Jan-26': datetime(2026,1,1),
-    'Feb-26': datetime(2026,2,1),  'Mar-26': datetime(2026,3,1),
-    'Apr-26': datetime(2026,4,1),
+    "Oct-25": datetime(2025, 10, 1),
+    "Nov-25": datetime(2025, 11, 1),
+    "Dec-25": datetime(2025, 12, 1),
+    "Jan-26": datetime(2026, 1, 1),
+    "Feb-26": datetime(2026, 2, 1),
+    "Mar-26": datetime(2026, 3, 1),
+    "Apr-26": datetime(2026, 4, 1),
 }
 
 PLOTLY_TEMPLATE = dict(
     layout=go.Layout(
-        font=dict(family='Inter, sans-serif', color='#334155'),
-        plot_bgcolor='white', paper_bgcolor='white',
-        colorway=['#3B82F6','#10B981','#8B5CF6','#F59E0B','#EF4444','#06B6D4'],
+        font=dict(family="Inter, sans-serif", color="#334155"),
+        plot_bgcolor="white",
+        paper_bgcolor="white",
+        colorway=["#3B82F6", "#10B981", "#8B5CF6", "#F59E0B", "#EF4444", "#06B6D4"],
     )
 )
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # ANIMATED COUNTER COMPONENT
@@ -224,6 +233,7 @@ def kpi_card(value, label, sublabel, color_class, icon, bar_color):
     """
     components.html(html, height=170)
 
+
 # ─────────────────────────────────────────────────────────────────────────────
 # SHAREPOINT CONFIG  — paste your sharing link here
 # ─────────────────────────────────────────────────────────────────────────────
@@ -231,6 +241,7 @@ SHAREPOINT_URL = (
     "https://itechzim.sharepoint.com/:x:/s/EHR-Documents/"
     "IQC7CQPdu9SIS6SYda-FfluIAd8KSi35YOs_8tXoGrLGufg?e=srcR0P&download=1"
 )
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # DATA FETCH FROM SHAREPOINT
@@ -245,8 +256,7 @@ def fetch_sharepoint(url: str) -> bytes:
             "Chrome/120.0.0.0 Safari/537.36"
         ),
         "Accept": (
-            "application/vnd.openxmlformats-officedocument"
-            ".spreadsheetml.sheet,*/*"
+            "application/vnd.openxmlformats-officedocument" ".spreadsheetml.sheet,*/*"
         ),
     }
     session = requests.Session()
@@ -255,15 +265,21 @@ def fetch_sharepoint(url: str) -> bytes:
     resp.raise_for_status()
     return resp.content
 
+
 # ─────────────────────────────────────────────────────────────────────────────
 # DATA PARSING
 # ─────────────────────────────────────────────────────────────────────────────
 def parse_val(v):
-    if pd.isna(v): return np.nan
+    if pd.isna(v):
+        return np.nan
     s = str(v).strip()
-    if s in ['N/A','','#VALUE!','nan','-']: return np.nan
-    try:    return float(s)
-    except: return np.nan
+    if s in ["N/A", "", "#VALUE!", "nan", "-"]:
+        return np.nan
+    try:
+        return float(s)
+    except:
+        return np.nan
+
 
 @st.cache_data(show_spinner=False)
 def load_data(file_bytes: bytes) -> pd.DataFrame:
@@ -277,66 +293,95 @@ def load_data(file_bytes: bytes) -> pd.DataFrame:
         row = df_raw.iloc[i]
         district = str(row[0]).strip()
         facility = str(row[1]).strip()
-        if district in ['','nan'] or facility in ['','nan']:
+        if district in ["", "nan"] or facility in ["", "nan"]:
             continue
         activation_date = None
         try:
             activation_date = pd.to_datetime(str(row[2]).strip(), dayfirst=True)
         except Exception:
             pass
-        act_month = datetime(activation_date.year, activation_date.month, 1) if activation_date else None
+        act_month = (
+            datetime(activation_date.year, activation_date.month, 1)
+            if activation_date
+            else None
+        )
 
         for j, month in enumerate(MONTHS):
             if act_month and MONTH_DATES[month] <= act_month:
                 continue
-            records.append({
-                'District':        district,
-                'Facility':        facility,
-                'Activation Date': activation_date,
-                'Month':           month,
-                'Month Date':      MONTH_DATES[month],
-                'VL Paper (BAs)':  parse_val(row[3  + j]),
-                'VL LIMS':         parse_val(row[10 + j]),
-                'VL EHR (BAs)':    parse_val(row[17 + j]),
-                'VL SHR (Jima)':   parse_val(row[24 + j]),
-            })
+            records.append(
+                {
+                    "District": district,
+                    "Facility": facility,
+                    "Activation Date": activation_date,
+                    "Month": month,
+                    "Month Date": MONTH_DATES[month],
+                    "VL Paper (BAs)": parse_val(row[3 + j]),
+                    "VL LIMS": parse_val(row[10 + j]),
+                    "VL EHR (BAs)": parse_val(row[17 + j]),
+                    "VL SHR (Jima)": parse_val(row[24 + j]),
+                }
+            )
 
     df = pd.DataFrame(records)
-    if df.empty: return df
-    df['Gap1'] = df['VL Paper (BAs)'] - df['VL EHR (BAs)']
-    df['Gap2'] = df['VL EHR (BAs)']   - df['VL SHR (Jima)']
-    df['Gap1 %'] = np.where(df['VL Paper (BAs)'] > 0,
-                    (df['Gap1']/df['VL Paper (BAs)']*100).round(1), np.nan)
-    df['Gap2 %'] = np.where(df['VL EHR (BAs)'] > 0,
-                    (df['Gap2']/df['VL EHR (BAs)']*100).round(1), np.nan)
+    if df.empty:
+        return df
+    df["Gap1"] = df["VL Paper (BAs)"] - df["VL EHR (BAs)"]
+    df["Gap2"] = df["VL EHR (BAs)"] - df["VL SHR (Jima)"]
+    df["Gap1 %"] = np.where(
+        df["VL Paper (BAs)"] > 0,
+        (df["Gap1"] / df["VL Paper (BAs)"] * 100).round(1),
+        np.nan,
+    )
+    df["Gap2 %"] = np.where(
+        df["VL EHR (BAs)"] > 0, (df["Gap2"] / df["VL EHR (BAs)"] * 100).round(1), np.nan
+    )
     return df
 
+
+import base64 as _b64, os as _os
+
+_logo_path = "logo.png"
+if _os.path.exists(_logo_path):
+    with open(_logo_path, "rb") as _lf:
+        _logo_src = "data:image/png;base64," + _b64.b64encode(_lf.read()).decode()
+else:
+    _logo_src = ""
 # ─────────────────────────────────────────────────────────────────────────────
 # SIDEBAR
 # ─────────────────────────────────────────────────────────────────────────────
 with st.sidebar:
-    st.markdown("""
-    <div style='padding:16px 0 8px'>
-        <div style='font-size:18px;font-weight:700;color:white'>🏥 EHR–LIMS</div>
-        <div style='font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px'>Validation Dashboard</div>
-    </div>""", unsafe_allow_html=True)
+
+    # Logo + title
+    st.markdown(
+        f"""
+    <div style='display:flex;align-items:center;gap:10px;padding:12px 0 10px'>
+        <img src='{_logo_src}' style='width:40px;height:40px;object-fit:contain;
+             border-radius:8px;background:white;padding:2px;flex-shrink:0;' alt='MoHCC'/>
+        <div>
+            <div style='font-size:15px;font-weight:700;color:white;line-height:1.2'>EHR–LIMS</div>
+            <div style='font-size:10px;color:rgba(255,255,255,0.4);margin-top:1px'>Validation Dashboard</div>
+        </div>
+    </div>""",
+        unsafe_allow_html=True,
+    )
     st.markdown("---")
 
-    # Source indicator
-    st.markdown("""<div style='font-size:10px;color:rgba(255,255,255,0.45);margin-bottom:4px;
-                              font-weight:600;letter-spacing:0.5px'>DATA SOURCE</div>
-        <div style='display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.06);
-                    border-radius:8px;padding:8px 10px;margin-bottom:4px'>
-            <span style='font-size:14px'>📡</span>
-            <div>
-                <div style='font-size:11px;font-weight:600;color:rgba(255,255,255,0.85)'>
-                    Live SharePoint Excel
-                </div>
-                <div style='font-size:10px;color:rgba(255,255,255,0.35);margin-top:1px'>
-                    Auto-refreshes every 5 min
-                </div>
-            </div>
-        </div>""", unsafe_allow_html=True)
+    # Data source + refresh
+    st.markdown(
+        """<div style='display:flex;align-items:center;gap:7px;
+                    background:rgba(255,255,255,0.06);border-radius:8px;
+                    padding:8px 10px;margin-bottom:8px'>
+        <span style='font-size:14px'>📡</span>
+        <div>
+            <div style='font-size:11px;font-weight:600;color:rgba(255,255,255,0.85)'>
+                Live SharePoint Excel</div>
+            <div style='font-size:9px;color:rgba(255,255,255,0.35);margin-top:1px'>
+                Auto-refreshes every 5 min</div>
+        </div>
+    </div>""",
+        unsafe_allow_html=True,
+    )
 
     if st.button("🔄  Refresh now", use_container_width=True):
         fetch_sharepoint.clear()
@@ -344,8 +389,8 @@ with st.sidebar:
 
     st.markdown("---")
 
-    # Load data from SharePoint
-    with st.spinner("Fetching live data from SharePoint…"):
+    # Load data
+    with st.spinner("Fetching live data…"):
         try:
             file_bytes = fetch_sharepoint(SHAREPOINT_URL)
             sp_ok = True
@@ -355,40 +400,103 @@ with st.sidebar:
 
     if not sp_ok:
         st.error(f"Could not reach SharePoint: {sp_error}")
-        st.markdown("""<div style='font-size:10px;color:rgba(255,255,255,0.4);margin-top:8px'>
-            The sharing link may need to be set to<br>
-            <b>"Anyone with the link"</b> in SharePoint,<br>
-            or your network may be blocking the request.
-        </div>""", unsafe_allow_html=True)
         st.stop()
 
     df = load_data(file_bytes)
 
-    districts  = sorted(df['District'].unique())
-    fac_pool   = sorted(df['Facility'].unique())
+    # ── FILTERS ────────────────────────────────────────────────────────────────
+    st.markdown(
+        "<div style='font-size:11px;font-weight:700;color:rgba(255,255,255,0.6);"
+        "letter-spacing:0.8px;text-transform:uppercase;margin-bottom:10px'>"
+        "🔍 Filters</div>",
+        unsafe_allow_html=True,
+    )
 
-    st.markdown("<div style='font-size:10px;font-weight:600;color:rgba(255,255,255,0.45);letter-spacing:0.5px;margin-bottom:6px'>DISTRICT</div>",
-                unsafe_allow_html=True)
-    sel_districts = st.multiselect("Districts", districts, default=districts,
-                                   label_visibility="collapsed")
+    # ── Quick facility search ──────────────────────────────────────────────────
+    all_facs = sorted(df["Facility"].unique())
+    all_districts = sorted(df["District"].unique())
 
-    fac_pool = sorted(df[df['District'].isin(sel_districts)]['Facility'].unique())
-    st.markdown("<div style='font-size:10px;font-weight:600;color:rgba(255,255,255,0.45);letter-spacing:0.5px;margin-top:12px;margin-bottom:6px'>FACILITY</div>",
-                unsafe_allow_html=True)
-    sel_facilities = st.multiselect("Facilities", fac_pool, default=fac_pool,
-                                    label_visibility="collapsed")
+    fac_search = st.text_input(
+        "Search facility",
+        placeholder="Type facility name…",
+        label_visibility="collapsed",
+    )
 
-    st.markdown("<div style='font-size:10px;font-weight:600;color:rgba(255,255,255,0.45);letter-spacing:0.5px;margin-top:12px;margin-bottom:6px'>MONTH RANGE</div>",
-                unsafe_allow_html=True)
-    m_start = st.selectbox("From", MONTHS, index=0, label_visibility="collapsed")
-    m_end   = st.selectbox("To",   MONTHS, index=len(MONTHS)-1, label_visibility="collapsed")
+    # ── District quick-select ──────────────────────────────────────────────────
+    st.markdown(
+        "<div style='font-size:10px;font-weight:600;color:rgba(255,255,255,0.45);"
+        "letter-spacing:0.5px;margin:10px 0 6px'>DISTRICT</div>",
+        unsafe_allow_html=True,
+    )
 
-    st.markdown("---")
-    st.markdown("""<div style='font-size:10px;color:rgba(255,255,255,0.35);line-height:2'>
-        🟡 <b>Gap 1</b> — Paper vs EHR<br>
-        🔴 <b>Gap 2</b> — EHR vs SHR<br>
-        Analysis starts month after go-live
-    </div>""", unsafe_allow_html=True)
+    sel_districts = st.multiselect(
+        "Districts",
+        all_districts,
+        default=all_districts,
+        label_visibility="collapsed",
+    )
+
+    # Quick All / None buttons for districts
+    _dcol1, _dcol2 = st.columns(2)
+    if _dcol1.button("All districts", use_container_width=True):
+        sel_districts = all_districts
+    if _dcol2.button("Clear", use_container_width=True, key="clr_dist"):
+        sel_districts = []
+
+    # ── Facility filter (respects district + search) ───────────────────────────
+    st.markdown(
+        "<div style='font-size:10px;font-weight:600;color:rgba(255,255,255,0.45);"
+        "letter-spacing:0.5px;margin:10px 0 6px'>FACILITY</div>",
+        unsafe_allow_html=True,
+    )
+
+    fac_pool = sorted(df[df["District"].isin(sel_districts)]["Facility"].unique())
+
+    # Apply text search filter
+    if fac_search:
+        fac_pool = [f for f in fac_pool if fac_search.lower() in f.lower()]
+
+    sel_facilities = st.multiselect(
+        "Facilities",
+        fac_pool,
+        default=fac_pool,
+        label_visibility="collapsed",
+    )
+
+    # Quick All / None buttons for facilities
+    _fc1, _fc2 = st.columns(2)
+    if _fc1.button("All facilities", use_container_width=True):
+        sel_facilities = fac_pool
+    if _fc2.button("Clear", use_container_width=True, key="clr_fac"):
+        sel_facilities = []
+
+    # ── Month range ────────────────────────────────────────────────────────────
+    st.markdown(
+        "<div style='font-size:10px;font-weight:600;color:rgba(255,255,255,0.45);"
+        "letter-spacing:0.5px;margin:10px 0 6px'>MONTH RANGE</div>",
+        unsafe_allow_html=True,
+    )
+
+    _m1, _m2 = st.columns(2)
+    m_start = _m1.selectbox("From", MONTHS, index=0, label_visibility="collapsed")
+    m_end = _m2.selectbox(
+        "To", MONTHS, index=len(MONTHS) - 1, label_visibility="collapsed"
+    )
+
+    # Active filter summary
+    n_sel_fac = len(sel_facilities)
+    n_sel_months = len(MONTHS[MONTHS.index(m_start) : MONTHS.index(m_end) + 1])
+    st.markdown(
+        f"""<div style='margin-top:14px;background:rgba(255,255,255,0.05);
+        border-radius:8px;padding:10px 12px;font-size:10px;
+        color:rgba(255,255,255,0.5);line-height:2'>
+        ✅ <b style='color:rgba(255,255,255,0.8)'>{n_sel_fac}</b> facilities selected<br>
+        📅 <b style='color:rgba(255,255,255,0.8)'>{n_sel_months}</b> months selected<br>
+        🟡 Gap 1 — Paper vs EHR<br>
+        🔴 Gap 2 — EHR vs SHR
+    </div>""",
+        unsafe_allow_html=True,
+    )
 
 if df.empty:
     st.error("No data parsed. Check the file format.")
@@ -397,11 +505,11 @@ if df.empty:
 # ─────────────────────────────────────────────────────────────────────────────
 # FILTER
 # ─────────────────────────────────────────────────────────────────────────────
-sel_months = MONTHS[MONTHS.index(m_start): MONTHS.index(m_end)+1]
+sel_months = MONTHS[MONTHS.index(m_start) : MONTHS.index(m_end) + 1]
 dff = df[
-    df['District'].isin(sel_districts) &
-    df['Facility'].isin(sel_facilities) &
-    df['Month'].isin(sel_months)
+    df["District"].isin(sel_districts)
+    & df["Facility"].isin(sel_facilities)
+    & df["Month"].isin(sel_months)
 ].copy()
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -420,13 +528,7 @@ submit_rate = round((total_shr / total_ehr) * 100, 1) if total_ehr > 0 else 0
 # ─────────────────────────────────────────────────────────────────────────────
 # Load MoHCC logo as base64 so it works offline inside components.html
 # ─────────────────────────────────────────────────────────────────────────────
-import base64 as _b64, os as _os
-_logo_path = "logo.png"
-if _os.path.exists(_logo_path):
-    with open(_logo_path, "rb") as _lf:
-        _logo_src = "data:image/png;base64," + _b64.b64encode(_lf.read()).decode()
-else:
-    _logo_src = ""
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # TOP SECTION — Animated Pipeline Dashboard (PowerPoint Style)
@@ -776,73 +878,86 @@ window.addEventListener('DOMContentLoaded', startAnimation);
     height=650,
 )
 # ─────────────────────────────────────────────────────────────────────────────
-fac = dff.groupby(['District','Facility'], as_index=False).agg(
-    Paper=('VL Paper (BAs)','sum'), EHR=('VL EHR (BAs)','sum'), SHR=('VL SHR (Jima)','sum')
+fac = dff.groupby(["District", "Facility"], as_index=False).agg(
+    Paper=("VL Paper (BAs)", "sum"),
+    EHR=("VL EHR (BAs)", "sum"),
+    SHR=("VL SHR (Jima)", "sum"),
 )
-fac['Gap1']   = fac['Paper'] - fac['EHR']
-fac['Gap2']   = fac['EHR']   - fac['SHR']
-fac['Gap1 %'] = (fac['Gap1']/fac['Paper']*100).round(1)
-fac['Gap2 %'] = (fac['Gap2']/fac['EHR']*100).round(1)
+fac["Gap1"] = fac["Paper"] - fac["EHR"]
+fac["Gap2"] = fac["EHR"] - fac["SHR"]
+fac["Gap1 %"] = (fac["Gap1"] / fac["Paper"] * 100).round(1)
+fac["Gap2 %"] = (fac["Gap2"] / fac["EHR"] * 100).round(1)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # MONTHLY CASCADE EXPLORER
 # ─────────────────────────────────────────────────────────────────────────────
-st.markdown('''<div style="font-size:14px;font-weight:600;color:#0D1B2A;
+st.markdown(
+    """<div style="font-size:14px;font-weight:600;color:#0D1B2A;
     margin:28px 0 14px;display:flex;align-items:center;gap:8px">
     📅 Monthly cascade explorer
     <span style="flex:1;height:1px;background:#E8EDF3;display:inline-block;margin-left:8px"></span>
-</div>''', unsafe_allow_html=True)
+</div>""",
+    unsafe_allow_html=True,
+)
 
 # ── Build monthly summary ─────────────────────────────────────────────────────
-MONTHS_ORDER = ['Oct-25','Nov-25','Dec-25','Jan-26','Feb-26','Mar-26','Apr-26']
-monthly_all = dff.groupby('Month', as_index=False).agg(
-    Paper=('VL Paper (BAs)', 'sum'),
-    EHR  =('VL EHR (BAs)',   'sum'),
-    SHR  =('VL SHR (Jima)',  'sum'),
-    Facs =('Facility',        'nunique'),
+MONTHS_ORDER = ["Oct-25", "Nov-25", "Dec-25", "Jan-26", "Feb-26", "Mar-26", "Apr-26"]
+monthly_all = dff.groupby("Month", as_index=False).agg(
+    Paper=("VL Paper (BAs)", "sum"),
+    EHR=("VL EHR (BAs)", "sum"),
+    SHR=("VL SHR (Jima)", "sum"),
+    Facs=("Facility", "nunique"),
 )
-monthly_all['Month'] = pd.Categorical(monthly_all['Month'], categories=MONTHS_ORDER, ordered=True)
-monthly_all = monthly_all.sort_values('Month').reset_index(drop=True)
-monthly_all['Gap1']    = monthly_all['Paper'] - monthly_all['EHR']
-monthly_all['Gap2']    = monthly_all['EHR']   - monthly_all['SHR']
-monthly_all['Gap1 %']  = (monthly_all['Gap1'] / monthly_all['Paper'] * 100).round(1)
-monthly_all['Gap2 %']  = (monthly_all['Gap2'] / monthly_all['EHR']   * 100).round(1)
-monthly_all['Capture %'] = (monthly_all['EHR'] / monthly_all['Paper'] * 100).round(1)
-monthly_all['Submit %']  = (monthly_all['SHR'] / monthly_all['EHR']  * 100).round(1)
+monthly_all["Month"] = pd.Categorical(
+    monthly_all["Month"], categories=MONTHS_ORDER, ordered=True
+)
+monthly_all = monthly_all.sort_values("Month").reset_index(drop=True)
+monthly_all["Gap1"] = monthly_all["Paper"] - monthly_all["EHR"]
+monthly_all["Gap2"] = monthly_all["EHR"] - monthly_all["SHR"]
+monthly_all["Gap1 %"] = (monthly_all["Gap1"] / monthly_all["Paper"] * 100).round(1)
+monthly_all["Gap2 %"] = (monthly_all["Gap2"] / monthly_all["EHR"] * 100).round(1)
+monthly_all["Capture %"] = (monthly_all["EHR"] / monthly_all["Paper"] * 100).round(1)
+monthly_all["Submit %"] = (monthly_all["SHR"] / monthly_all["EHR"] * 100).round(1)
 
-avail_months = [m for m in MONTHS_ORDER if m in monthly_all['Month'].values]
+avail_months = [m for m in MONTHS_ORDER if m in monthly_all["Month"].values]
 
 # ── Grouped bar chart — Paper / EHR / SHR by month ───────────────────────────
 # Pre-compute per-month facility hover text (ordered by gap %)
-_hover_paper = []   # Gap 1 breakdown on Paper bar
-_hover_ehr   = []   # Gap 2 breakdown on EHR bar
-_hover_shr   = []   # Gap 2 breakdown on SHR bar
+_hover_paper = []  # Gap 1 breakdown on Paper bar
+_hover_ehr = []  # Gap 2 breakdown on EHR bar
+_hover_shr = []  # Gap 2 breakdown on SHR bar
 
-for _m in monthly_all['Month']:
-    _mf = dff[dff['Month'] == _m].copy()
-    _mf['_g1']  = _mf['VL Paper (BAs)'] - _mf['VL EHR (BAs)']
-    _mf['_g1p'] = np.where(_mf['VL Paper (BAs)']>0,
-                           (_mf['_g1']/_mf['VL Paper (BAs)']*100).round(1), np.nan)
-    _mf['_g2']  = _mf['VL EHR (BAs)'] - _mf['VL SHR (Jima)']
-    _mf['_g2p'] = np.where(_mf['VL EHR (BAs)']>0,
-                           (_mf['_g2']/_mf['VL EHR (BAs)']*100).round(1), np.nan)
+for _m in monthly_all["Month"]:
+    _mf = dff[dff["Month"] == _m].copy()
+    _mf["_g1"] = _mf["VL Paper (BAs)"] - _mf["VL EHR (BAs)"]
+    _mf["_g1p"] = np.where(
+        _mf["VL Paper (BAs)"] > 0,
+        (_mf["_g1"] / _mf["VL Paper (BAs)"] * 100).round(1),
+        np.nan,
+    )
+    _mf["_g2"] = _mf["VL EHR (BAs)"] - _mf["VL SHR (Jima)"]
+    _mf["_g2p"] = np.where(
+        _mf["VL EHR (BAs)"] > 0,
+        (_mf["_g2"] / _mf["VL EHR (BAs)"] * 100).round(1),
+        np.nan,
+    )
 
     # Paper bar → show Gap 1 by facility
-    _s1 = _mf.sort_values('_g1p', ascending=False).dropna(subset=['_g1p'])
-    _h1 = (f'<b>Gap 1 — facilities ({_m})</b><br>'
-           + '<br>'.join(
-               f"{'🔴' if r['_g1p']>30 else '🟡' if r['_g1p']>10 else '🟢'} "
-               f"{r['Facility']}: {int(r['_g1']):,} &nbsp;({r['_g1p']}%)"
-               for _,r in _s1.iterrows()))
+    _s1 = _mf.sort_values("_g1p", ascending=False).dropna(subset=["_g1p"])
+    _h1 = f"<b>Gap 1 — facilities ({_m})</b><br>" + "<br>".join(
+        f"{'🔴' if r['_g1p']>30 else '🟡' if r['_g1p']>10 else '🟢'} "
+        f"{r['Facility']}: {int(r['_g1']):,} &nbsp;({r['_g1p']}%)"
+        for _, r in _s1.iterrows()
+    )
     _hover_paper.append(_h1)
 
     # EHR bar → show Gap 2 by facility
-    _s2 = _mf.sort_values('_g2p', ascending=False).dropna(subset=['_g2p'])
-    _h2 = (f'<b>Gap 2 — facilities ({_m})</b><br>'
-           + '<br>'.join(
-               f"{'🔴' if r['_g2p']>30 else '🟡' if r['_g2p']>10 else '🟢'} "
-               f"{r['Facility']}: {int(r['_g2']):,} &nbsp;({r['_g2p']}%)"
-               for _,r in _s2.iterrows()))
+    _s2 = _mf.sort_values("_g2p", ascending=False).dropna(subset=["_g2p"])
+    _h2 = f"<b>Gap 2 — facilities ({_m})</b><br>" + "<br>".join(
+        f"{'🔴' if r['_g2p']>30 else '🟡' if r['_g2p']>10 else '🟢'} "
+        f"{r['Facility']}: {int(r['_g2']):,} &nbsp;({r['_g2p']}%)"
+        for _, r in _s2.iterrows()
+    )
     _hover_ehr.append(_h2)
     _hover_shr.append(_h2)
 
@@ -850,79 +965,97 @@ fig_monthly_bar = go.Figure()
 
 # Paper bars
 fig_monthly_bar.add_bar(
-    x=monthly_all['Month'], y=monthly_all['Paper'],
-    name='Paper (BAs)', marker_color='#1F7A4A',
-    text=monthly_all['Paper'].apply(lambda v: f'{int(v):,}' if not pd.isna(v) else ''),
-    textposition='outside', textfont=dict(size=9, color='#374151'),
+    x=monthly_all["Month"],
+    y=monthly_all["Paper"],
+    name="Total VL Collected",
+    marker_color="#1F7A4A",
+    text=monthly_all["Paper"].apply(lambda v: f"{int(v):,}" if not pd.isna(v) else ""),
+    textposition="outside",
+    textfont=dict(size=9, color="#374151"),
     customdata=_hover_paper,
-    hovertemplate='%{customdata}<extra></extra>',
+    hovertemplate="%{customdata}<extra></extra>",
 )
 
 # EHR bars
 fig_monthly_bar.add_bar(
-    x=monthly_all['Month'], y=monthly_all['EHR'],
-    name='Captured in EHR', marker_color='#0891B2',
-    text=monthly_all['EHR'].apply(lambda v: f'{int(v):,}' if not pd.isna(v) else ''),
-    textposition='outside', textfont=dict(size=9, color='#374151'),
+    x=monthly_all["Month"],
+    y=monthly_all["EHR"],
+    name="Captured in EHR",
+    marker_color="#0891B2",
+    text=monthly_all["EHR"].apply(lambda v: f"{int(v):,}" if not pd.isna(v) else ""),
+    textposition="outside",
+    textfont=dict(size=9, color="#374151"),
     customdata=_hover_ehr,
-    hovertemplate='%{customdata}<extra></extra>',
+    hovertemplate="%{customdata}<extra></extra>",
 )
 
 # SHR bars
 fig_monthly_bar.add_bar(
-    x=monthly_all['Month'], y=monthly_all['SHR'],
-    name='Submitted to SHR', marker_color='#2E5FA3',
-    text=monthly_all['SHR'].apply(lambda v: f'{int(v):,}' if not pd.isna(v) else ''),
-    textposition='outside', textfont=dict(size=9, color='#374151'),
-    customdata=_hover_shr,
-    hovertemplate='%{customdata}<extra></extra>',
+    x=monthly_all["Month"],
+    y=monthly_all["SHR"],
+    name="Submitted to SHR",
+    marker_color="#2E5FA3",
+    text=monthly_all["SHR"].apply(lambda v: f"{int(v):,}" if not pd.isna(v) else ""),
+    textposition="outside",
+    textfont=dict(size=9, color="#374151"),
+    hovertemplate="<b>%{x}</b><br>Submitted to SHR: %{y:,.0f}<extra></extra>",
 )
 
 fig_monthly_bar.update_layout(
-    barmode='group',
+    barmode="group",
     height=400,
     margin=dict(l=10, r=10, t=70, b=10),
     legend=dict(
-        orientation='h', yanchor='top', y=-0.08,
-        xanchor='left', x=0,
+        orientation="h",
+        yanchor="top",
+        y=-0.08,
+        xanchor="left",
+        x=0,
         font=dict(size=11),
-        bgcolor='rgba(0,0,0,0)',
+        bgcolor="rgba(0,0,0,0)",
     ),
-    xaxis=dict(gridcolor='#F1F5F9', tickfont=dict(size=11)),
-    yaxis=dict(gridcolor='#F1F5F9', title='Sample count', tickfont=dict(size=10)),
-    plot_bgcolor='white', paper_bgcolor='white',
-    hovermode='closest',
+    xaxis=dict(gridcolor="#F1F5F9", tickfont=dict(size=11)),
+    yaxis=dict(gridcolor="#F1F5F9", title="Sample count", tickfont=dict(size=10)),
+    plot_bgcolor="white",
+    paper_bgcolor="white",
+    hovermode="closest",
     hoverlabel=dict(
-        bgcolor='white', bordercolor='#E2E8F0',
-        font=dict(size=11, family='Inter, sans-serif'),
-        align='left',
+        bgcolor="white",
+        bordercolor="#E2E8F0",
+        font=dict(size=11, family="Inter, sans-serif"),
+        align="left",
     ),
     title=dict(
         text=(
             '<b style="font-size:14px">Paper vs EHR vs SHR by month</b><br>'
             '<span style="font-size:11px;color:#94A3B8">'
-            'Hover each bar to see facility breakdown ordered by gap %'
-            '</span>'
+            "Hover each bar to see facility breakdown ordered by gap %"
+            "</span>"
         ),
-        font=dict(size=14), x=0.01, y=0.97, yanchor='top',
+        font=dict(size=14),
+        x=0.01,
+        y=0.97,
+        yanchor="top",
         pad=dict(b=16),
     ),
 )
 st.plotly_chart(fig_monthly_bar, use_container_width=True)
 
 # ── Auto-detect insights ──────────────────────────────────────────────────────
-best_capture  = monthly_all.loc[monthly_all['Capture %'].idxmax()]
-worst_capture = monthly_all.loc[monthly_all['Capture %'].idxmin()]
-best_submit   = monthly_all.loc[monthly_all['Submit %'].idxmax()]
-worst_submit  = monthly_all.loc[monthly_all['Submit %'].idxmin()]
-highest_paper = monthly_all.loc[monthly_all['Paper'].idxmax()]
-lowest_paper  = monthly_all.loc[monthly_all['Paper'].idxmin()]
+best_capture = monthly_all.loc[monthly_all["Capture %"].idxmax()]
+worst_capture = monthly_all.loc[monthly_all["Capture %"].idxmin()]
+best_submit = monthly_all.loc[monthly_all["Submit %"].idxmax()]
+worst_submit = monthly_all.loc[monthly_all["Submit %"].idxmin()]
+highest_paper = monthly_all.loc[monthly_all["Paper"].idxmax()]
+lowest_paper = monthly_all.loc[monthly_all["Paper"].idxmin()]
 
 # ── Insight banner ────────────────────────────────────────────────────────────
 ic1, ic2, ic3, ic4 = st.columns(4)
 
+
 def insight_card(col, icon, title, month, value, color, bg):
-    col.markdown(f'''
+    col.markdown(
+        f"""
     <div style="background:{bg};border-radius:10px;padding:14px 16px;
                 border-left:4px solid {color};border:1px solid {color}30;">
         <div style="font-size:18px;margin-bottom:4px">{icon}</div>
@@ -930,24 +1063,47 @@ def insight_card(col, icon, title, month, value, color, bg):
                     letter-spacing:0.6px;color:{color};margin-bottom:3px">{title}</div>
         <div style="font-size:15px;font-weight:800;color:#0F172A">{month}</div>
         <div style="font-size:11px;color:#64748B;margin-top:2px">{value}</div>
-    </div>''', unsafe_allow_html=True)
+    </div>""",
+        unsafe_allow_html=True,
+    )
 
-insight_card(ic1, "🏆", "Best EHR capture",
-             best_capture['Month'],
-             f"{best_capture['Capture %']}% capture rate · {int(best_capture['EHR']):,} orders",
-             "#059669", "#F0FDF4")
-insight_card(ic2, "⚠️", "Worst EHR capture",
-             worst_capture['Month'],
-             f"{worst_capture['Capture %']}% capture rate · {int(worst_capture['Gap1']):,} missed",
-             "#B45309", "#FFFBEB")
-insight_card(ic3, "✅", "Best SHR submission",
-             best_submit['Month'],
-             f"{best_submit['Submit %']}% submission rate · {int(best_submit['SHR']):,} sent",
-             "#2563EB", "#EFF6FF")
-insight_card(ic4, "🔴", "Worst SHR submission",
-             worst_submit['Month'],
-             f"{worst_submit['Submit %']}% submission rate · {int(worst_submit['Gap2']):,} missed",
-             "#B91C1C", "#FEF2F2")
+
+insight_card(
+    ic1,
+    "🏆",
+    "Best EHR capture",
+    best_capture["Month"],
+    f"{best_capture['Capture %']}% capture rate · {int(best_capture['EHR']):,} orders",
+    "#059669",
+    "#F0FDF4",
+)
+insight_card(
+    ic2,
+    "⚠️",
+    "Worst EHR capture",
+    worst_capture["Month"],
+    f"{worst_capture['Capture %']}% capture rate · {int(worst_capture['Gap1']):,} missed",
+    "#B45309",
+    "#FFFBEB",
+)
+insight_card(
+    ic3,
+    "✅",
+    "Best SHR submission",
+    best_submit["Month"],
+    f"{best_submit['Submit %']}% submission rate · {int(best_submit['SHR']):,} sent",
+    "#2563EB",
+    "#EFF6FF",
+)
+insight_card(
+    ic4,
+    "🔴",
+    "Worst SHR submission",
+    worst_submit["Month"],
+    f"{worst_submit['Submit %']}% submission rate · {int(worst_submit['Gap2']):,} missed",
+    "#B91C1C",
+    "#FEF2F2",
+)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
@@ -958,245 +1114,386 @@ sel_month = st.select_slider(
     value=avail_months[-1],
 )
 
-mrow = monthly_all[monthly_all['Month'] == sel_month].iloc[0]
-avg_paper = monthly_all['Paper'].mean()
-avg_ehr   = monthly_all['EHR'].mean()
-avg_shr   = monthly_all['SHR'].mean()
+mrow = monthly_all[monthly_all["Month"] == sel_month].iloc[0]
+avg_paper = monthly_all["Paper"].mean()
+avg_ehr = monthly_all["EHR"].mean()
+avg_shr = monthly_all["SHR"].mean()
 
-# ── Selected month KPIs ───────────────────────────────────────────────────────
-st.markdown(f'''<div style="font-size:12px;font-weight:600;color:#64748B;
-    margin-bottom:10px;text-align:center;text-transform:uppercase;letter-spacing:0.5px">
-    Showing: {sel_month} · {int(mrow['Facs'])} facilities reporting
-</div>''', unsafe_allow_html=True)
+# ── Facility breakdown — animated ranked bar charts ───────────────────────────
+st.markdown(
+    f"""<div style="font-size:14px;font-weight:600;color:#0D1B2A;
+    margin:20px 0 12px;display:flex;align-items:center;gap:8px">
+    Facility performance — {sel_month}
+    <span style="flex:1;height:1px;background:#E8EDF3;display:inline-block;margin-left:8px"></span>
+</div>""",
+    unsafe_allow_html=True,
+)
 
-mc1,mc2,mc3,mc4,mc5 = st.columns(5)
-def month_kpi(col, label, value, avg, unit="", color="#0F172A", bg="#F8FAFC", border="#E2E8F0"):
-    delta = value - avg
-    arrow = "▲" if delta >= 0 else "▼"
-    dcolor = "#059669" if delta >= 0 else "#DC2626"
-    col.markdown(f'''
-    <div style="background:{bg};border-radius:10px;padding:14px 16px;
-                border:1px solid {border};text-align:center;">
-        <div style="font-size:9px;font-weight:700;text-transform:uppercase;
-                    letter-spacing:0.5px;color:#64748B;margin-bottom:6px">{label}</div>
-        <div style="font-size:22px;font-weight:800;color:{color}">{int(value):,}{unit}</div>
-        <div style="font-size:10px;color:{dcolor};margin-top:4px;font-weight:600">
-            {arrow} {abs(int(delta)):,} vs avg
-        </div>
-    </div>''', unsafe_allow_html=True)
+fac_month = dff[dff["Month"] == sel_month].copy()
+fac_month["Gap1"] = fac_month["VL Paper (BAs)"] - fac_month["VL EHR (BAs)"]
+fac_month["Gap2"] = fac_month["VL EHR (BAs)"] - fac_month["VL SHR (Jima)"]
+fac_month["Gap1 %"] = (fac_month["Gap1"] / fac_month["VL Paper (BAs)"] * 100).round(1)
+fac_month["Gap2 %"] = (fac_month["Gap2"] / fac_month["VL EHR (BAs)"] * 100).round(1)
 
-month_kpi(mc1, "Paper Samples",   mrow['Paper'], avg_paper, bg="#EFF6FF", border="#BFDBFE", color="#1E3A5F")
-month_kpi(mc2, "Captured in EHR", mrow['EHR'],   avg_ehr,   bg="#F0FDFA", border="#99F6E4", color="#0F766E")
-month_kpi(mc3, "Submitted to SHR",mrow['SHR'],   avg_shr,   bg="#F5F3FF", border="#DDD6FE", color="#5B21B6")
-month_kpi(mc4, "Gap 1 (Paper−EHR)",mrow['Gap1'], monthly_all['Gap1'].mean(),
-          bg="#FFFBEB", border="#FDE68A", color="#92400E")
-month_kpi(mc5, "Gap 2 (EHR−SHR)", mrow['Gap2'], monthly_all['Gap2'].mean(),
-          bg="#FEF2F2", border="#FECACA", color="#991B1B")
 
-st.markdown("<br>", unsafe_allow_html=True)
+def _bar_color(pct):
+    if pd.isna(pct) or pct < 0:
+        return "#3B82F6"
+    if pct > 30:
+        return "#EF4444"
+    if pct > 10:
+        return "#F59E0B"
+    return "#10B981"
 
-# ── Monthly trend charts ──────────────────────────────────────────────────────
-ch1, ch2 = st.columns(2)
 
-def monthly_bar_chart(df, y_col, title, color_main, color_hi, sel):
-    colors = [color_hi if m == sel else color_main for m in df['Month']]
-    fig = go.Figure()
-    fig.add_bar(
-        x=df['Month'], y=df[y_col], marker_color=colors,
-        text=df[y_col].apply(lambda v: f'{int(v):,}'),
-        textposition='outside', textfont=dict(size=10, color='#374151'),
-        hovertemplate='<b>%{x}</b><br>' + y_col + ': %{y:,.0f}<extra></extra>'
+def _build_animated_chart(df, val_col, pct_col, abs_col, title, subtitle):
+    """Build a Plotly figure that reveals bars one-by-one, worst first."""
+    s = df.dropna(subset=[pct_col]).sort_values(pct_col, ascending=False)
+    s = s.reset_index(drop=True)
+
+    facs = s["Facility"].tolist()
+    pcts = s[pct_col].tolist()
+    absv = s[abs_col].tolist()
+    colors = [_bar_color(p) for p in pcts]
+
+    n = len(facs)
+    # Each frame reveals one more bar (worst → best)
+    frames = []
+    for i in range(n + 1):
+        bar_x = pcts[:i] + [0] * (n - i)
+        bar_text = [f"{absv[j]:,.0f}  ({pcts[j]}%)" for j in range(i)] + [""] * (n - i)
+        frames.append(
+            go.Frame(
+                data=[
+                    go.Bar(
+                        x=bar_x,
+                        y=facs,
+                        orientation="h",
+                        marker_color=colors,
+                        text=bar_text,
+                        textposition="outside",
+                        textfont=dict(size=10, color="#374151"),
+                        width=0.6,
+                    )
+                ],
+                name=str(i),
+            )
+        )
+
+    fig = go.Figure(
+        data=[
+            go.Bar(
+                x=[0] * n,
+                y=facs,
+                orientation="h",
+                marker_color=colors,
+                text=[""] * n,
+                textposition="outside",
+                width=0.6,
+            )
+        ],
+        frames=frames,
     )
-    # avg line
-    avg = df[y_col].mean()
-    fig.add_hline(y=avg, line_dash='dot', line_color='#94A3B8', line_width=1.5,
-                  annotation_text=f'Avg: {int(avg):,}',
-                  annotation_position='top right',
-                  annotation_font=dict(size=9, color='#64748B'))
     fig.update_layout(
-        title=dict(text=f'<b>{title}</b>', font=dict(size=13), x=0.02),
-        height=280, margin=dict(l=10,r=10,t=45,b=10),
-        plot_bgcolor='white', paper_bgcolor='white',
-        xaxis=dict(gridcolor='#F1F5F9'),
-        yaxis=dict(gridcolor='#F1F5F9', showticklabels=False),
+        title=dict(
+            text=f"<b>{title}</b><br>"
+            f'<span style="font-size:11px;color:#94A3B8">{subtitle}</span>',
+            font=dict(size=13),
+            x=0.01,
+        ),
+        height=max(320, n * 38 + 80),
+        margin=dict(l=10, r=80, t=65, b=10),
+        xaxis=dict(
+            title="Gap %",
+            ticksuffix="%",
+            gridcolor="#F1F5F9",
+            zeroline=True,
+            zerolinecolor="#CBD5E1",
+            zerolinewidth=1.5,
+            range=[-5, max(max(pcts) + 10, 10)],
+        ),
+        yaxis=dict(
+            autorange="reversed",
+            tickfont=dict(size=11),
+            tickmode="array",
+            tickvals=facs,
+            ticktext=facs,
+        ),
+        plot_bgcolor="white",
+        paper_bgcolor="white",
         showlegend=False,
+        updatemenus=[
+            dict(
+                type="buttons",
+                showactive=False,
+                visible=False,  # hidden — JS clicks it automatically
+                buttons=[
+                    dict(
+                        label="Play",
+                        method="animate",
+                        args=[
+                            None,
+                            dict(
+                                frame=dict(duration=120, redraw=True),
+                                fromcurrent=True,
+                                mode="immediate",
+                                transition=dict(duration=80, easing="cubic-in-out"),
+                            ),
+                        ],
+                    )
+                ],
+            )
+        ],
     )
     return fig
 
-with ch1:
-    st.plotly_chart(
-        monthly_bar_chart(monthly_all, 'Paper', 'Paper samples by month',
-                          '#BFDBFE', '#1E3A5F', sel_month),
-        use_container_width=True)
-with ch2:
-    st.plotly_chart(
-        monthly_bar_chart(monthly_all, 'Gap1 %', 'Gap 1 % (Paper not in EHR)',
-                          '#FDE68A', '#B45309', sel_month),
-        use_container_width=True)
 
-ch3, ch4 = st.columns(2)
-with ch3:
-    st.plotly_chart(
-        monthly_bar_chart(monthly_all, 'EHR', 'EHR captures by month',
-                          '#99F6E4', '#0F766E', sel_month),
-        use_container_width=True)
-with ch4:
-    st.plotly_chart(
-        monthly_bar_chart(monthly_all, 'Gap2 %', 'Gap 2 % (EHR not in SHR)',
-                          '#FECACA', '#991B1B', sel_month),
-        use_container_width=True)
-
-# ── Facility breakdown for selected month ─────────────────────────────────────
-st.markdown(f'''<div style="font-size:14px;font-weight:600;color:#0D1B2A;
-    margin:20px 0 12px;display:flex;align-items:center;gap:8px">
-    🏥 Facility performance — {sel_month}
-    <span style="flex:1;height:1px;background:#E8EDF3;display:inline-block;margin-left:8px"></span>
-</div>''', unsafe_allow_html=True)
-
-fac_month = dff[dff['Month'] == sel_month].copy()
-fac_month['Gap1']   = fac_month['VL Paper (BAs)'] - fac_month['VL EHR (BAs)']
-fac_month['Gap2']   = fac_month['VL EHR (BAs)']   - fac_month['VL SHR (Jima)']
-fac_month['Gap1 %'] = (fac_month['Gap1'] / fac_month['VL Paper (BAs)'] * 100).round(1)
-fac_month['Gap2 %'] = (fac_month['Gap2'] / fac_month['VL EHR (BAs)']  * 100).round(1)
-fac_month = fac_month.sort_values('Gap1 %', ascending=False)
-
-def color_pct(val):
-    if pd.isna(val): return ''
-    if val > 30:  return 'background-color:#FEF2F2;color:#991B1B;font-weight:700'
-    if val > 10:  return 'background-color:#FFFBEB;color:#92400E;font-weight:700'
-    if val >= 0:  return 'background-color:#F0FDF4;color:#15803D;font-weight:700'
-    return 'background-color:#EFF6FF;color:#1E3A5F;font-weight:700'
-
-display_cols = ['Facility','VL Paper (BAs)','VL EHR (BAs)','VL SHR (Jima)','Gap1','Gap1 %','Gap2','Gap2 %']
-fac_display = fac_month[display_cols].rename(columns={
-    'VL Paper (BAs)'  : 'Paper',
-    'VL EHR (BAs)'    : 'EHR',
-    'VL SHR (Jima)'   : 'SHR',
-    'Gap1'            : 'Gap 1',
-    'Gap1 %'          : 'Gap 1 %',
-    'Gap2'            : 'Gap 2',
-    'Gap2 %'          : 'Gap 2 %',
-}).reset_index(drop=True)
-
-styled_fac = (
-    fac_display.style
-    .map(color_pct, subset=['Gap 1 %','Gap 2 %'])
-    .format({'Paper':'{:,.0f}','EHR':'{:,.0f}','SHR':'{:,.0f}',
-             'Gap 1':'{:,.0f}','Gap 2':'{:,.0f}',
-             'Gap 1 %':'{:.1f}%','Gap 2 %':'{:.1f}%'})
-    .set_table_styles([{'selector':'th',
-        'props':[("background","#F1F5F9"),("font-size","11px"),
-                 ("font-weight","700"),("text-transform","uppercase")]}])
+_g1_chart = _build_animated_chart(
+    fac_month,
+    "VL EHR (BAs)",
+    "Gap1 %",
+    "Gap1",
+    "Gap 1 — Paper vs EHR (samples not entered into EHR)",
+    f"Worst → best · {sel_month} · 🔴 >30%  🟡 10–30%  🟢 <10%",
 )
-st.dataframe(styled_fac, use_container_width=True, height=380)
+_g2_chart = _build_animated_chart(
+    fac_month,
+    "VL SHR (Jima)",
+    "Gap2 %",
+    "Gap2",
+    "Gap 2 — EHR vs SHR (orders not submitted to SHR)",
+    f"Worst → best · {sel_month} · 🔴 >30%  🟡 10–30%  🟢 <10%",
+)
+
+import plotly.io as _pio
+
+
+def _animated_chart_html(fig, chart_id):
+    """Convert Plotly figure to self-contained HTML that auto-plays."""
+    html = _pio.to_html(
+        fig,
+        include_plotlyjs="cdn",
+        div_id=chart_id,
+        full_html=False,
+        config=dict(displayModeBar=False),
+    )
+    autoplay = f"""
+<script>
+(function() {{
+    function tryPlay() {{
+        var el = document.getElementById('{chart_id}');
+        if (!el) {{ setTimeout(tryPlay, 200); return; }}
+        setTimeout(function() {{
+            Plotly.animate('{chart_id}', null, {{
+                frame: {{duration: 120, redraw: true}},
+                transition: {{duration: 80, easing: 'cubic-in-out'}},
+                mode: 'immediate'
+            }});
+        }}, 400);
+    }}
+    if (typeof Plotly !== 'undefined') {{ tryPlay(); }}
+    else {{ window.addEventListener('load', tryPlay); }}
+}})();
+</script>"""
+    return html + autoplay
+
+
+_ch1, _ch2 = st.columns(2)
+with _ch1:
+    import streamlit.components.v1 as _comp
+
+    _comp.html(
+        _animated_chart_html(_g1_chart, f'gap1_{sel_month.replace("-","")}'),
+        height=_g1_chart.layout.height + 40,
+    )
+with _ch2:
+    _comp.html(
+        _animated_chart_html(_g2_chart, f'gap2_{sel_month.replace("-","")}'),
+        height=_g2_chart.layout.height + 40,
+    )
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # GAP CHARTS
 # ─────────────────────────────────────────────────────────────────────────────
-st.markdown('<div style="font-size:14px;font-weight:600;color:#0D1B2A;margin:28px 0 12px;display:flex;align-items:center;gap:8px">📊 Data leakage by facility<span style="flex:1;height:1px;background:#E8EDF3;display:inline-block;margin-left:8px"></span></div>', unsafe_allow_html=True)
+st.markdown(
+    '<div style="font-size:14px;font-weight:600;color:#0D1B2A;margin:28px 0 12px;display:flex;align-items:center;gap:8px">📊 Data leakage by facility<span style="flex:1;height:1px;background:#E8EDF3;display:inline-block;margin-left:8px"></span></div>',
+    unsafe_allow_html=True,
+)
 
 col_a, col_b = st.columns(2)
 
-def styled_bar(df_in, bg_col, fg_col, bg_name, fg_name, gap_col, gap_pct_col, title, subtitle):
+
+def styled_bar(
+    df_in, bg_col, fg_col, bg_name, fg_name, gap_col, gap_pct_col, title, subtitle
+):
     s = df_in.sort_values(gap_col, ascending=False)
     colors = []
     for v in s[gap_pct_col]:
-        if pd.isna(v):     colors.append('#94A3B8')
-        elif v > 30:       colors.append('#EF4444')
-        elif v > 10:       colors.append('#F59E0B')
-        else:              colors.append('#10B981')
+        if pd.isna(v):
+            colors.append("#94A3B8")
+        elif v > 30:
+            colors.append("#EF4444")
+        elif v > 10:
+            colors.append("#F59E0B")
+        else:
+            colors.append("#10B981")
 
     fig = go.Figure()
-    fig.add_bar(y=s['Facility'], x=s[bg_col], name=bg_name,
-                orientation='h', marker_color='#E2E8F0',
-                hovertemplate='<b>%{y}</b><br>'+bg_name+': %{x:,}<extra></extra>')
-    fig.add_bar(y=s['Facility'], x=s[fg_col], name=fg_name,
-                orientation='h', marker_color=colors,
-                hovertemplate='<b>%{y}</b><br>'+fg_name+': %{x:,}<br>Gap: %{customdata:.1f}%<extra></extra>',
-                customdata=s[gap_pct_col])
+    fig.add_bar(
+        y=s["Facility"],
+        x=s[bg_col],
+        name=bg_name,
+        orientation="h",
+        marker_color="#E2E8F0",
+        hovertemplate="<b>%{y}</b><br>" + bg_name + ": %{x:,}<extra></extra>",
+    )
+    fig.add_bar(
+        y=s["Facility"],
+        x=s[fg_col],
+        name=fg_name,
+        orientation="h",
+        marker_color=colors,
+        hovertemplate="<b>%{y}</b><br>"
+        + fg_name
+        + ": %{x:,}<br>Gap: %{customdata:.1f}%<extra></extra>",
+        customdata=s[gap_pct_col],
+    )
     fig.update_layout(
-        title=dict(text=f'<b>{title}</b><br><span style="font-size:11px;color:#94A3B8">{subtitle}</span>',
-                   font=dict(size=13), x=0),
-        barmode='overlay', height=420,
-        margin=dict(l=10,r=20,t=60,b=10),
-        legend=dict(orientation='h', yanchor='bottom', y=1.08, font=dict(size=11)),
-        xaxis=dict(title='Sample count', gridcolor='#F1F5F9', tickfont=dict(size=10)),
+        title=dict(
+            text=f'<b>{title}</b><br><span style="font-size:11px;color:#94A3B8">{subtitle}</span>',
+            font=dict(size=13),
+            x=0,
+        ),
+        barmode="overlay",
+        height=420,
+        margin=dict(l=10, r=20, t=60, b=10),
+        legend=dict(orientation="h", yanchor="bottom", y=1.08, font=dict(size=11)),
+        xaxis=dict(title="Sample count", gridcolor="#F1F5F9", tickfont=dict(size=10)),
         yaxis=dict(tickfont=dict(size=10)),
-        plot_bgcolor='white', paper_bgcolor='white',
+        plot_bgcolor="white",
+        paper_bgcolor="white",
     )
     return fig
 
+
 with col_a:
     st.plotly_chart(
-        styled_bar(fac, 'Paper','EHR','Paper (BAs)','EHR Captured',
-                   'Gap1','Gap1 %','Gap 1 — Paper vs EHR',
-                   'Colour = severity: red >30% · amber 10–30% · green <10%'),
-        use_container_width=True)
+        styled_bar(
+            fac,
+            "Paper",
+            "EHR",
+            "Total VL Collected",
+            "EHR Captured",
+            "Gap1",
+            "Gap1 %",
+            "Gap 1 — Paper vs EHR",
+            "Colour = severity: red >30% · amber 10–30% · green <10%",
+        ),
+        use_container_width=True,
+    )
 
 with col_b:
     st.plotly_chart(
-        styled_bar(fac, 'EHR','SHR','EHR (BAs)','SHR Submitted',
-                   'Gap2','Gap2 %','Gap 2 — EHR vs SHR',
-                   'Colour = severity: red >30% · amber 10–30% · green <10%'),
-        use_container_width=True)
+        styled_bar(
+            fac,
+            "EHR",
+            "SHR",
+            "EHR (BAs)",
+            "SHR Submitted",
+            "Gap2",
+            "Gap2 %",
+            "Gap 2 — EHR vs SHR",
+            "Colour = severity: red >30% · amber 10–30% · green <10%",
+        ),
+        use_container_width=True,
+    )
 
 # ─────────────────────────────────────────────────────────────────────────────
 # MONTHLY TREND + CAPTURE RATE DONUT
 # ─────────────────────────────────────────────────────────────────────────────
-st.markdown('<div style="font-size:14px;font-weight:600;color:#0D1B2A;margin:28px 0 12px;display:flex;align-items:center;gap:8px">📈 Monthly trend & capture rates<span style="flex:1;height:1px;background:#E8EDF3;display:inline-block;margin-left:8px"></span></div>', unsafe_allow_html=True)
+st.markdown(
+    '<div style="font-size:14px;font-weight:600;color:#0D1B2A;margin:28px 0 12px;display:flex;align-items:center;gap:8px">📈 Monthly trend & capture rates<span style="flex:1;height:1px;background:#E8EDF3;display:inline-block;margin-left:8px"></span></div>',
+    unsafe_allow_html=True,
+)
 
 col_trend, col_donut = st.columns([2.2, 1])
 
-monthly = dff.groupby('Month', as_index=False).agg(
-    Paper=('VL Paper (BAs)','sum'), EHR=('VL EHR (BAs)','sum'), SHR=('VL SHR (Jima)','sum')
+monthly = dff.groupby("Month", as_index=False).agg(
+    Paper=("VL Paper (BAs)", "sum"),
+    EHR=("VL EHR (BAs)", "sum"),
+    SHR=("VL SHR (Jima)", "sum"),
 )
-monthly['Month Date'] = monthly['Month'].map(MONTH_DATES)
-monthly = monthly.sort_values('Month Date')
-monthly['Gap1'] = monthly['Paper'] - monthly['EHR']
-monthly['Gap2'] = monthly['EHR']   - monthly['SHR']
+monthly["Month Date"] = monthly["Month"].map(MONTH_DATES)
+monthly = monthly.sort_values("Month Date")
+monthly["Gap1"] = monthly["Paper"] - monthly["EHR"]
+monthly["Gap2"] = monthly["EHR"] - monthly["SHR"]
 
 with col_trend:
     fig_trend = go.Figure()
     # Fill area between Paper and EHR (gap 1)
     fig_trend.add_scatter(
-        x=monthly['Month'], y=monthly['Paper'], name='Paper (BAs)',
-        mode='lines+markers', line=dict(color='#3B82F6', width=2.5),
-        marker=dict(size=8, color='white', line=dict(color='#3B82F6',width=2)),
-        fill=None)
+        x=monthly["Month"],
+        y=monthly["Paper"],
+        name="Total VL Collected",
+        mode="lines+markers",
+        line=dict(color="#3B82F6", width=2.5),
+        marker=dict(size=8, color="white", line=dict(color="#3B82F6", width=2)),
+        fill=None,
+    )
     fig_trend.add_scatter(
-        x=monthly['Month'], y=monthly['EHR'], name='EHR (BAs)',
-        mode='lines+markers', line=dict(color='#10B981', width=2.5),
-        marker=dict(size=8, color='white', line=dict(color='#10B981',width=2)),
-        fill='tonexty', fillcolor='rgba(59,130,246,0.07)')
+        x=monthly["Month"],
+        y=monthly["EHR"],
+        name="EHR (BAs)",
+        mode="lines+markers",
+        line=dict(color="#10B981", width=2.5),
+        marker=dict(size=8, color="white", line=dict(color="#10B981", width=2)),
+        fill="tonexty",
+        fillcolor="rgba(59,130,246,0.07)",
+    )
     fig_trend.add_scatter(
-        x=monthly['Month'], y=monthly['SHR'], name='SHR (Jima)',
-        mode='lines+markers', line=dict(color='#8B5CF6', width=2.5),
-        marker=dict(size=8, color='white', line=dict(color='#8B5CF6',width=2)),
-        fill='tonexty', fillcolor='rgba(16,185,129,0.07)')
+        x=monthly["Month"],
+        y=monthly["SHR"],
+        name="SHR (Jima)",
+        mode="lines+markers",
+        line=dict(color="#8B5CF6", width=2.5),
+        marker=dict(size=8, color="white", line=dict(color="#8B5CF6", width=2)),
+        fill="tonexty",
+        fillcolor="rgba(16,185,129,0.07)",
+    )
     fig_trend.update_layout(
-        height=300, margin=dict(l=10,r=10,t=20,b=10),
-        legend=dict(orientation='h', yanchor='bottom', y=1.02, font=dict(size=11)),
-        xaxis=dict(gridcolor='#F1F5F9'), yaxis=dict(gridcolor='#F1F5F9', title='Samples'),
-        plot_bgcolor='white', paper_bgcolor='white',
-        hovermode='x unified',
+        height=300,
+        margin=dict(l=10, r=10, t=20, b=10),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, font=dict(size=11)),
+        xaxis=dict(gridcolor="#F1F5F9"),
+        yaxis=dict(gridcolor="#F1F5F9", title="Samples"),
+        plot_bgcolor="white",
+        paper_bgcolor="white",
+        hovermode="x unified",
     )
     st.plotly_chart(fig_trend, use_container_width=True)
 
 with col_donut:
     # Funnel/donut showing overall pipeline retention
-    fig_donut = go.Figure(go.Funnel(
-        y=['Paper collected','Captured in EHR','Submitted to SHR'],
-        x=[int(total_paper), int(total_ehr), int(total_shr)],
-        textinfo='value+percent initial',
-        marker=dict(color=['#3B82F6','#10B981','#8B5CF6'],
-                    line=dict(color='white', width=2)),
-        connector=dict(line=dict(color='#F1F5F9', width=1)),
-        textfont=dict(size=11),
-    ))
+    fig_donut = go.Figure(
+        go.Funnel(
+            y=["Paper collected", "Captured in EHR", "Submitted to SHR"],
+            x=[int(total_paper), int(total_ehr), int(total_shr)],
+            textinfo="value+percent initial",
+            marker=dict(
+                color=["#3B82F6", "#10B981", "#8B5CF6"],
+                line=dict(color="white", width=2),
+            ),
+            connector=dict(line=dict(color="#F1F5F9", width=1)),
+            textfont=dict(size=11),
+        )
+    )
     fig_donut.update_layout(
-        title=dict(text='<b>Pipeline retention</b>', font=dict(size=13), x=0.02),
-        height=300, margin=dict(l=10,r=10,t=50,b=10),
-        paper_bgcolor='white', plot_bgcolor='white',
+        title=dict(text="<b>Pipeline retention</b>", font=dict(size=13), x=0.02),
+        height=300,
+        margin=dict(l=10, r=10, t=50, b=10),
+        paper_bgcolor="white",
+        plot_bgcolor="white",
         showlegend=False,
     )
     st.plotly_chart(fig_donut, use_container_width=True)
@@ -1204,30 +1501,37 @@ with col_donut:
 # ─────────────────────────────────────────────────────────────────────────────
 # LEADERBOARD + DRILLDOWN
 # ─────────────────────────────────────────────────────────────────────────────
-st.markdown('<div class="sec-hdr">🏆 Leakage leaderboard & facility drilldown</div>',
-            unsafe_allow_html=True)
+st.markdown(
+    '<div class="sec-hdr">🏆 Leakage leaderboard & facility drilldown</div>',
+    unsafe_allow_html=True,
+)
 
 col_lb, col_drill = st.columns([1.3, 1])
 
 with col_lb:
-    board = fac.sort_values('Gap1 %', ascending=False).reset_index(drop=True)
+    board = fac.sort_values("Gap1 %", ascending=False).reset_index(drop=True)
 
     def badge(pct):
-        if pd.isna(pct):  return f'<span class="lb-badge badge-purple">N/A</span>'
-        if pct > 30:      return f'<span class="lb-badge badge-red">{pct:.1f}%</span>'
-        if pct > 10:      return f'<span class="lb-badge badge-amber">{pct:.1f}%</span>'
-        return                   f'<span class="lb-badge badge-green">{pct:.1f}%</span>'
+        if pd.isna(pct):
+            return f'<span class="lb-badge badge-purple">N/A</span>'
+        if pct > 30:
+            return f'<span class="lb-badge badge-red">{pct:.1f}%</span>'
+        if pct > 10:
+            return f'<span class="lb-badge badge-amber">{pct:.1f}%</span>'
+        return f'<span class="lb-badge badge-green">{pct:.1f}%</span>'
 
     def mini_bar(ehr, paper, color):
-        pct = min(ehr/paper*100, 100) if paper > 0 else 0
+        pct = min(ehr / paper * 100, 100) if paper > 0 else 0
         return f"""<div style="background:#F1F5F9;border-radius:4px;height:6px;width:100%">
             <div style="background:{color};height:6px;border-radius:4px;width:{pct:.0f}%"></div>
         </div>"""
 
     html_rows = ""
     for i, row in board.iterrows():
-        critical = ' critical' if (not pd.isna(row['Gap1 %']) and row['Gap1 %'] > 30) else ''
-        rank_icon = ['🥇','🥈','🥉'][i] if i < 3 else f'#{i+1}'
+        critical = (
+            " critical" if (not pd.isna(row["Gap1 %"]) and row["Gap1 %"] > 30) else ""
+        )
+        rank_icon = ["🥇", "🥈", "🥉"][i] if i < 3 else f"#{i+1}"
         html_rows += f"""
         <div class="lb-row{critical}">
           <div class="lb-rank">{rank_icon}</div>
@@ -1242,7 +1546,8 @@ with col_lb:
           </div>
         </div>"""
 
-    components.html(f"""
+    components.html(
+        f"""
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
     * {{ font-family: 'Inter', sans-serif; box-sizing: border-box; }}
@@ -1268,65 +1573,98 @@ with col_lb:
                  border-color:#FECDD3!important;background:#FFF5F5!important; }}
     </style>
     <div>{html_rows}</div>
-    """, height=min(80 * len(board) + 20, 520), scrolling=True)
+    """,
+        height=min(80 * len(board) + 20, 520),
+        scrolling=True,
+    )
 
 with col_drill:
-    sel_fac = st.selectbox("Select facility", sorted(dff['Facility'].unique()),
-                           label_visibility="collapsed")
-    fac_df = dff[dff['Facility'] == sel_fac].sort_values('Month Date')
-    act = fac_df['Activation Date'].iloc[0] if not fac_df.empty else None
-    dist = fac_df['District'].iloc[0] if not fac_df.empty else '—'
-    g1   = fac_df['Gap1'].sum()
-    g2   = fac_df['Gap2'].sum()
-    g1p  = fac_df['Gap1 %'].mean()
-    g2p  = fac_df['Gap2 %'].mean()
+    sel_fac = st.selectbox(
+        "Select facility",
+        sorted(dff["Facility"].unique()),
+        label_visibility="collapsed",
+    )
+    fac_df = dff[dff["Facility"] == sel_fac].sort_values("Month Date")
+    act = fac_df["Activation Date"].iloc[0] if not fac_df.empty else None
+    dist = fac_df["District"].iloc[0] if not fac_df.empty else "—"
+    g1 = fac_df["Gap1"].sum()
+    g2 = fac_df["Gap2"].sum()
+    g1p = fac_df["Gap1 %"].mean()
+    g2p = fac_df["Gap2 %"].mean()
 
     # Mini stat row
     sc1, sc2 = st.columns(2)
     with sc1:
-        st.markdown(f"""<div class="drill-stat">
+        st.markdown(
+            f"""<div class="drill-stat">
             <div class="ds-lbl">District</div>
             <div class="ds-val" style="font-size:15px">{dist}</div>
         </div>
         <div class="drill-stat">
             <div class="ds-lbl">Gap 1 total</div>
             <div class="ds-val" style="color:#F59E0B">{int(g1):,} <span style="font-size:12px">({g1p:.1f}%)</span></div>
-        </div>""", unsafe_allow_html=True)
+        </div>""",
+            unsafe_allow_html=True,
+        )
     with sc2:
-        st.markdown(f"""<div class="drill-stat">
+        st.markdown(
+            f"""<div class="drill-stat">
             <div class="ds-lbl">Activated</div>
             <div class="ds-val" style="font-size:15px">{act.strftime('%b %Y') if act else '—'}</div>
         </div>
         <div class="drill-stat">
             <div class="ds-lbl">Gap 2 total</div>
             <div class="ds-val" style="color:#EF4444">{int(g2):,} <span style="font-size:12px">({g2p:.1f}%)</span></div>
-        </div>""", unsafe_allow_html=True)
+        </div>""",
+            unsafe_allow_html=True,
+        )
 
     fig_drill = go.Figure()
-    fig_drill.add_scatter(x=fac_df['Month'], y=fac_df['VL Paper (BAs)'], name='Paper',
-        mode='lines+markers', line=dict(color='#3B82F6',width=2.5),
-        marker=dict(size=9,color='white',line=dict(color='#3B82F6',width=2)))
-    fig_drill.add_scatter(x=fac_df['Month'], y=fac_df['VL EHR (BAs)'],   name='EHR',
-        mode='lines+markers', line=dict(color='#10B981',width=2.5),
-        marker=dict(size=9,color='white',line=dict(color='#10B981',width=2)))
-    fig_drill.add_scatter(x=fac_df['Month'], y=fac_df['VL SHR (Jima)'],  name='SHR',
-        mode='lines+markers', line=dict(color='#8B5CF6',width=2.5),
-        marker=dict(size=9,color='white',line=dict(color='#8B5CF6',width=2)))
+    fig_drill.add_scatter(
+        x=fac_df["Month"],
+        y=fac_df["VL Paper (BAs)"],
+        name="Paper",
+        mode="lines+markers",
+        line=dict(color="#3B82F6", width=2.5),
+        marker=dict(size=9, color="white", line=dict(color="#3B82F6", width=2)),
+    )
+    fig_drill.add_scatter(
+        x=fac_df["Month"],
+        y=fac_df["VL EHR (BAs)"],
+        name="EHR",
+        mode="lines+markers",
+        line=dict(color="#10B981", width=2.5),
+        marker=dict(size=9, color="white", line=dict(color="#10B981", width=2)),
+    )
+    fig_drill.add_scatter(
+        x=fac_df["Month"],
+        y=fac_df["VL SHR (Jima)"],
+        name="SHR",
+        mode="lines+markers",
+        line=dict(color="#8B5CF6", width=2.5),
+        marker=dict(size=9, color="white", line=dict(color="#8B5CF6", width=2)),
+    )
     fig_drill.update_layout(
-        height=220, margin=dict(l=10,r=10,t=10,b=10),
-        legend=dict(orientation='h',yanchor='bottom',y=1.02,font=dict(size=10)),
-        xaxis=dict(gridcolor='#F1F5F9',tickfont=dict(size=9)),
-        yaxis=dict(gridcolor='#F1F5F9',tickfont=dict(size=9)),
-        plot_bgcolor='white', paper_bgcolor='white', hovermode='x unified',
+        height=220,
+        margin=dict(l=10, r=10, t=10, b=10),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, font=dict(size=10)),
+        xaxis=dict(gridcolor="#F1F5F9", tickfont=dict(size=9)),
+        yaxis=dict(gridcolor="#F1F5F9", tickfont=dict(size=9)),
+        plot_bgcolor="white",
+        paper_bgcolor="white",
+        hovermode="x unified",
     )
     st.plotly_chart(fig_drill, use_container_width=True)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # FOOTER
 # ─────────────────────────────────────────────────────────────────────────────
-st.markdown("""<div style="text-align:center;margin-top:32px;padding:16px;
+st.markdown(
+    """<div style="text-align:center;margin-top:32px;padding:16px;
     color:#94A3B8;font-size:11px;border-top:1px solid #E8EDF3;">
     🔴 >30% gap · 🟡 10–30% · 🟢 &lt;10% &nbsp;|&nbsp;
     Analysis starts the month <i>after</i> facility go-live &nbsp;|&nbsp;
     Zim-TTECH · EHR–LIMS Validation
-</div>""", unsafe_allow_html=True)
+</div>""",
+    unsafe_allow_html=True,
+)

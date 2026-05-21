@@ -105,7 +105,7 @@ html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
 /* ── kpi card ── */
 .kpi-card {
     background: white; border-radius: 14px; padding: 20px 22px;
-    border: 1px solid #E8EDF3; position: relative; overflow: hidden;
+    border: 1px solid #DBEAFE; position: relative; overflow: hidden;
     transition: transform 0.2s, box-shadow 0.2s;
     box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
@@ -117,7 +117,7 @@ html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
 }
 .kpi-card .kc-val  { font-size: 28px; font-weight: 700; color: #0D1B2A; letter-spacing: -0.5px; }
 .kpi-card .kc-lbl  { font-size: 12px; font-weight: 600; color: #64748B; margin-top: 2px; }
-.kpi-card .kc-sub  { font-size: 11px; color: #94A3B8; margin-top: 4px; }
+.kpi-card .kc-sub  { font-size: 11px; color: #64748B; margin-top: 4px; }
 .kpi-card .kc-bar  { position: absolute; bottom: 0; left: 0; height: 3px; border-radius: 0 0 14px 14px; }
 .kc-blue   .kc-icon { background: #EFF6FF; }
 .kc-green  .kc-icon { background: #F0FDF4; }
@@ -142,7 +142,7 @@ html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
 /* ── chart card ── */
 .chart-card {
     background: white; border-radius: 14px; padding: 20px;
-    border: 1px solid #E8EDF3; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    border: 1px solid #DBEAFE; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 
 /* ── leaderboard ── */
@@ -152,10 +152,10 @@ html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
     background: #FAFBFC; border: 1px solid #F1F5F9; transition: background 0.15s;
 }
 .lb-row:hover { background: #F1F5F9; }
-.lb-rank { font-size: 13px; font-weight: 700; color: #94A3B8; min-width: 22px; }
+.lb-rank { font-size: 13px; font-weight: 700; color: #64748B; min-width: 22px; }
 .lb-name { flex: 1; }
 .lb-name .lbn-fac { font-size: 13px; font-weight: 600; color: #0D1B2A; }
-.lb-name .lbn-dist { font-size: 11px; color: #94A3B8; }
+.lb-name .lbn-dist { font-size: 11px; color: #64748B; }
 .lb-bars { flex: 0 0 160px; }
 .lb-badge {
     font-size: 11px; font-weight: 700; border-radius: 20px;
@@ -175,112 +175,75 @@ html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
 
 /* ── sidebar ── */
 [data-testid="stSidebar"] {
-    background: #F0F4F8 !important;
+    background: linear-gradient(180deg, #1E3A5F 0%, #1E3A5F 160px, #F0F4F8 160px) !important;
     border-right: 1px solid #D1DBE8 !important;
 }
 
-/* All text in sidebar — dark for readability */
-[data-testid="stSidebar"] * {
-    color: #1E3A5F !important;
-    font-family: 'Inter', sans-serif !important;
-}
+/* Text — dark navy on light background */
+[data-testid="stSidebar"] label,
+[data-testid="stSidebar"] p,
+[data-testid="stSidebar"] span:not([data-baseweb="tag"] span),
+[data-testid="stSidebar"] div { color: #1E3A5F; }
 
-/* Input / text field */
-[data-testid="stSidebar"] input[type="text"],
-[data-testid="stSidebar"] .stTextInput input {
+/* Search input */
+[data-testid="stSidebar"] input {
     background: white !important;
     border: 1.5px solid #C8D6E5 !important;
     border-radius: 8px !important;
     color: #0F172A !important;
-    padding: 8px 12px !important;
 }
-[data-testid="stSidebar"] .stTextInput input::placeholder {
-    color: #94A3B8 !important;
-}
-[data-testid="stSidebar"] .stTextInput input:focus {
-    border-color: #2E5FA3 !important;
-    box-shadow: 0 0 0 3px rgba(46,95,163,0.12) !important;
-}
+[data-testid="stSidebar"] input::placeholder { color: #64748B !important; }
 
-/* Multiselect + selectbox containers */
-[data-testid="stSidebar"] .stMultiSelect > div,
-[data-testid="stSidebar"] .stSelectbox > div {
+/* Multiselect / selectbox */
+[data-testid="stSidebar"] .stMultiSelect > div > div,
+[data-testid="stSidebar"] .stSelectbox > div > div {
     background: white !important;
     border: 1.5px solid #C8D6E5 !important;
     border-radius: 8px !important;
 }
-[data-testid="stSidebar"] .stMultiSelect > div:focus-within,
-[data-testid="stSidebar"] .stSelectbox > div:focus-within {
-    border-color: #2E5FA3 !important;
-    box-shadow: 0 0 0 3px rgba(46,95,163,0.12) !important;
-}
 
-/* Selected pills in multiselect */
+/* Selected pills — light blue */
 [data-testid="stSidebar"] span[data-baseweb="tag"] {
-    background: #1E3A5F !important;
+    background: #DBEAFE !important;
+    border: 1px solid #93C5FD !important;
     border-radius: 6px !important;
     padding: 2px 8px !important;
 }
 [data-testid="stSidebar"] span[data-baseweb="tag"] span {
-    color: white !important;
+    color: #1E3A5F !important;
     font-size: 11px !important;
     font-weight: 600 !important;
 }
-[data-testid="stSidebar"] span[data-baseweb="tag"] button {
-    color: rgba(255,255,255,0.7) !important;
-}
-[data-testid="stSidebar"] span[data-baseweb="tag"] button:hover {
-    color: white !important;
-}
 
-/* Dropdown options */
-[data-testid="stSidebar"] li[role="option"] {
+/* ALL buttons — white with navy text */
+[data-testid="stSidebar"] button {
     background: white !important;
     color: #1E3A5F !important;
-}
-[data-testid="stSidebar"] li[role="option"]:hover {
-    background: #EFF4FB !important;
-}
-
-/* Buttons */
-[data-testid="stSidebar"] .stButton button {
-    background: white !important;
     border: 1.5px solid #C8D6E5 !important;
-    color: #1E3A5F !important;
     border-radius: 8px !important;
     font-weight: 600 !important;
-    font-size: 11px !important;
+    font-size: 12px !important;
     transition: all 0.15s !important;
 }
-[data-testid="stSidebar"] .stButton button:hover {
+[data-testid="stSidebar"] button:hover {
     background: #1E3A5F !important;
     color: white !important;
     border-color: #1E3A5F !important;
 }
-
-/* Refresh button — primary style */
-[data-testid="stSidebar"] .stButton:first-of-type button {
-    background: #1E3A5F !important;
-    color: white !important;
-    border-color: #1E3A5F !important;
-}
+/* Override * for button text specifically */
+[data-testid="stSidebar"] button p,
+[data-testid="stSidebar"] button span { color: inherit !important; }
 
 /* Divider */
-[data-testid="stSidebar"] hr {
-    border-color: #D1DBE8 !important;
-}
-
-/* Spinner */
-[data-testid="stSidebar"] .stSpinner { color: #2E5FA3 !important; }
+[data-testid="stSidebar"] hr { border-color: #BFDBFE !important; }
 
 /* Scrollbar */
 [data-testid="stSidebar"]::-webkit-scrollbar { width: 4px; }
-[data-testid="stSidebar"]::-webkit-scrollbar-track { background: transparent; }
 [data-testid="stSidebar"]::-webkit-scrollbar-thumb { background: #C8D6E5; border-radius: 4px; }
 
 /* ── drilldown ── */
-.drill-stat { background: #F8FAFC; border-radius: 10px; padding: 10px 14px; margin-bottom: 8px; border: 1px solid #E8EDF3; }
-.drill-stat .ds-lbl { font-size: 11px; color: #94A3B8; font-weight: 500; }
+.drill-stat { background: #F0F7FF; border-radius: 10px; padding: 10px 14px; margin-bottom: 8px; border: 1px solid #DBEAFE; }
+.drill-stat .ds-lbl { font-size: 11px; color: #64748B; font-weight: 500; }
 .drill-stat .ds-val { font-size: 18px; font-weight: 700; color: #0D1B2A; margin-top: 2px; }
 </style>
 """, unsafe_allow_html=True)
@@ -461,7 +424,7 @@ with st.sidebar:
         <div>
             <div style='font-size:11px;font-weight:600;color:#1E3A5F'>
                 Live SharePoint Excel</div>
-            <div style='font-size:9px;color:#94A3B8;margin-top:1px'>
+            <div style='font-size:9px;color:#64748B;margin-top:1px'>
                 Auto-refreshes every 5 min</div>
         </div>
     </div>""", unsafe_allow_html=True)
@@ -487,82 +450,58 @@ with st.sidebar:
 
     df = load_data(file_bytes)
 
-    # ── FILTERS ────────────────────────────────────────────────────────────────
-    st.markdown("<div style='font-size:11px;font-weight:800;color:#1E3A5F;"
-                "letter-spacing:0.8px;text-transform:uppercase;margin-bottom:10px'>"
-                "🔍 Filters</div>", unsafe_allow_html=True)
-
-    # ── Quick facility search ──────────────────────────────────────────────────
-    all_facs = sorted(df['Facility'].unique())
+    # ── FILTERS (wrapped in form — only reruns on Apply) ─────────────────────
     all_districts = sorted(df['District'].unique())
 
-    fac_search = st.text_input(
-        "Search facility",
-        placeholder="Type facility name…",
-        label_visibility="collapsed",
-    )
+    st.markdown("<p style='font-size:11px;font-weight:700;color:#475569;"
+                "letter-spacing:0.7px;text-transform:uppercase;margin-bottom:8px'>"
+                "🔍 Filters</p>", unsafe_allow_html=True)
 
-    # ── District quick-select ──────────────────────────────────────────────────
-    st.markdown("<div style='font-size:10px;font-weight:600;color:rgba(255,255,255,0.45);"
-                "letter-spacing:0.5px;margin:10px 0 6px'>DISTRICT</div>",
-                unsafe_allow_html=True)
+    with st.form("sidebar_filters"):
 
-    sel_districts = st.multiselect(
-        "Districts", all_districts, default=all_districts,
-        label_visibility="collapsed",
-    )
+        st.markdown("<p style='font-size:10px;font-weight:700;color:#64748B;"
+                    "letter-spacing:0.5px;margin:0 0 4px'>DISTRICT</p>",
+                    unsafe_allow_html=True)
+        sel_districts = st.multiselect(
+            "District", all_districts, default=all_districts,
+            label_visibility="collapsed",
+            placeholder="Select districts…",
+        )
 
-    # Quick All / None buttons for districts
-    _dcol1, _dcol2 = st.columns(2)
-    if _dcol1.button("All districts", use_container_width=True):
-        sel_districts = all_districts
-    if _dcol2.button("Clear", use_container_width=True, key="clr_dist"):
-        sel_districts = []
+        st.markdown("<p style='font-size:10px;font-weight:700;color:#64748B;"
+                    "letter-spacing:0.5px;margin:14px 0 4px'>FACILITY</p>",
+                    unsafe_allow_html=True)
+        fac_pool = sorted(df[df['District'].isin(sel_districts)]['Facility'].unique())
+        sel_facilities = st.multiselect(
+            "Facility", fac_pool, default=fac_pool,
+            label_visibility="collapsed",
+            placeholder="Type or select facility…",
+        )
 
-    # ── Facility filter (respects district + search) ───────────────────────────
-    st.markdown("<div style='font-size:10px;font-weight:600;color:rgba(255,255,255,0.45);"
-                "letter-spacing:0.5px;margin:10px 0 6px'>FACILITY</div>",
-                unsafe_allow_html=True)
+        st.markdown("<p style='font-size:10px;font-weight:700;color:#64748B;"
+                    "letter-spacing:0.5px;margin:14px 0 4px'>MONTH RANGE</p>",
+                    unsafe_allow_html=True)
+        _m1, _m2 = st.columns(2)
+        m_start = _m1.selectbox("From", MONTHS, index=0, label_visibility="collapsed")
+        m_end   = _m2.selectbox("To", MONTHS, index=len(MONTHS)-1, label_visibility="collapsed")
 
-    fac_pool = sorted(df[df['District'].isin(sel_districts)]['Facility'].unique())
+        st.form_submit_button("✓  Apply Filters", use_container_width=True)
 
-    # Apply text search filter
-    if fac_search:
-        fac_pool = [f for f in fac_pool if fac_search.lower() in f.lower()]
-
-    sel_facilities = st.multiselect(
-        "Facilities", fac_pool, default=fac_pool,
-        label_visibility="collapsed",
-    )
-
-    # Quick All / None buttons for facilities
-    _fc1, _fc2 = st.columns(2)
-    if _fc1.button("All facilities", use_container_width=True):
-        sel_facilities = fac_pool
-    if _fc2.button("Clear", use_container_width=True, key="clr_fac"):
-        sel_facilities = []
-
-    # ── Month range ────────────────────────────────────────────────────────────
-    st.markdown("<div style='font-size:10px;font-weight:600;color:rgba(255,255,255,0.45);"
-                "letter-spacing:0.5px;margin:10px 0 6px'>MONTH RANGE</div>",
-                unsafe_allow_html=True)
-
-    _m1, _m2 = st.columns(2)
-    m_start = _m1.selectbox("From", MONTHS, index=0,
-                             label_visibility="collapsed")
-    m_end   = _m2.selectbox("To",   MONTHS, index=len(MONTHS)-1,
-                             label_visibility="collapsed")
-
-    # Active filter summary
-    n_sel_fac = len(sel_facilities)
+    # Summary card (outside form)
+    n_sel_fac    = len(sel_facilities)
     n_sel_months = len(MONTHS[MONTHS.index(m_start): MONTHS.index(m_end)+1])
-    st.markdown(f"""<div style='margin-top:14px;background:white;
-        border-radius:8px;border:1px solid #D1DBE8;
-        padding:10px 12px;font-size:10px;color:#64748B;line-height:2'>
-        ✅ <b style='color:#1E3A5F'>{n_sel_fac}</b> facilities selected<br>
-        📅 <b style='color:#1E3A5F'>{n_sel_months}</b> months selected<br>
-        🟡 Gap 1 — Paper vs EHR<br>
-        🔴 Gap 2 — EHR vs SHR
+    st.markdown(f"""
+    <div style='margin-top:12px;background:#F0F7FF;border-radius:12px;
+        border:1px solid #DBEAFE;padding:12px 14px;
+        box-shadow:0 1px 4px rgba(0,0,0,0.04)'>
+      <div style='font-size:11px;color:#475569;line-height:2.2'>
+        <span style='color:#059669;font-weight:700'>✓</span>
+        <b style='color:#1E3A5F'> {n_sel_fac}</b> facilities &nbsp;
+        <span style='color:#2E5FA3;font-weight:700'>▪</span>
+        <b style='color:#1E3A5F'> {n_sel_months}</b> months<br>
+        <span style='color:#D4841A'>●</span> Gap 1 — Paper vs EHR<br>
+        <span style='color:#EF4444'>●</span> Gap 2 — EHR vs SHR
+      </div>
     </div>""", unsafe_allow_html=True)
 
 if df.empty:
@@ -608,7 +547,7 @@ body {{ background: transparent; padding: 5px; }}
 /* ── Container ── */
 .dashboard-wrapper {{
     background: #FFFFFF;
-    border: 1px solid #E8EDF3;
+    border: 1px solid #DBEAFE;
     border-radius: 12px;
     padding: 24px 24px 32px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.03);
@@ -634,12 +573,12 @@ body {{ background: transparent; padding: 5px; }}
 }}
 .live-dot {{ color: #10B981; font-size: 10px; }}
 .h-right {{ text-align: right; position: relative; }}
-.last-updated-lbl {{ font-size: 10px; color: #94A3B8; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; }}
+.last-updated-lbl {{ font-size: 10px; color: #64748B; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; }}
 .last-updated-val {{ font-size: 13px; font-weight: 700; color: #0F172A; margin-top: 4px; }}
 
 .replay-btn {{
     position: absolute; right: 0; top: 40px;
-    background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px;
+    background: #F0F7FF; border: 1px solid #E2E8F0; border-radius: 6px;
     padding: 6px 14px; font-size: 11px; font-weight: 700; color: #475569;
     cursor: pointer; transition: all 0.2s;
 }}
@@ -1054,8 +993,8 @@ fig_monthly_bar.update_layout(
         font=dict(size=11),
         bgcolor='rgba(0,0,0,0)',
     ),
-    xaxis=dict(gridcolor='#F1F5F9', tickfont=dict(size=11)),
-    yaxis=dict(gridcolor='#F1F5F9', title='Sample count', tickfont=dict(size=10)),
+    xaxis=dict(gridcolor='#EFF6FF', tickfont=dict(size=11)),
+    yaxis=dict(gridcolor='#EFF6FF', title='Sample count', tickfont=dict(size=10)),
     plot_bgcolor='white', paper_bgcolor='white',
     hovermode='closest',
     hoverlabel=dict(
@@ -1066,7 +1005,7 @@ fig_monthly_bar.update_layout(
     title=dict(
         text=(
             '<b style="font-size:14px">Paper vs EHR vs SHR by month</b><br>'
-            '<span style="font-size:11px;color:#94A3B8">'
+            '<span style="font-size:11px;color:#64748B">'
             'Hover each bar to see facility breakdown ordered by gap %'
             '</span>'
         ),
@@ -1115,13 +1054,13 @@ insight_card(ic4, "🔴", "Worst SHR submission",
              f"{worst_submit['Submit %']}% submission rate · {int(worst_submit['Gap2']):,} missed",
              "#B91C1C", "#FEF2F2")
 
-st.markdown("<br>", unsafe_allow_html=True)
-
-# ── Month slider ──────────────────────────────────────────────────────────────
-sel_month = st.select_slider(
-    "🗓️ Slide to explore a month",
+# ── Month selector — tabs style ───────────────────────────────────────────────
+sel_month = st.radio(
+    "Select month",
     options=avail_months,
-    value=avail_months[-1],
+    index=len(avail_months)-1,
+    horizontal=True,
+    label_visibility="collapsed",
 )
 
 mrow = monthly_all[monthly_all['Month'] == sel_month].iloc[0]
@@ -1172,6 +1111,7 @@ def _build_animated_chart(df, val_col, pct_col, abs_col, title, subtitle):
                 text=bar_text,
                 textposition='outside',
                 textfont=dict(size=10, color='#374151'),
+                cliponaxis=False,
                 width=0.6,
             )],
             name=str(i)
@@ -1184,6 +1124,7 @@ def _build_animated_chart(df, val_col, pct_col, abs_col, title, subtitle):
             marker_color=colors,
             text=['']*n,
             textposition='outside',
+            cliponaxis=False,
             width=0.6,
         )],
         frames=frames,
@@ -1191,16 +1132,18 @@ def _build_animated_chart(df, val_col, pct_col, abs_col, title, subtitle):
     fig.update_layout(
         title=dict(
             text=f'<b>{title}</b><br>'
-                 f'<span style="font-size:11px;color:#94A3B8">{subtitle}</span>',
+                 f'<span style="font-size:11px;color:#64748B">{subtitle}</span>',
             font=dict(size=13), x=0.01
         ),
-        height=max(320, n * 38 + 80),
-        margin=dict(l=10, r=80, t=65, b=10),
+        height=max(360, n * 42 + 90),
+        margin=dict(l=160, r=180, t=72, b=20),
         xaxis=dict(
-            title='Gap %', ticksuffix='%',
-            gridcolor='#F1F5F9', zeroline=True,
+            title=None,
+            ticksuffix='%',
+            gridcolor='#EFF6FF', zeroline=True,
             zerolinecolor='#CBD5E1', zerolinewidth=1.5,
-            range=[-5, max(max(pcts)+10, 10)],
+            showline=True, linecolor='#CBD5E1', linewidth=1,
+            range=[-5, max(max(pcts) + 25, 20)],
         ),
         yaxis=dict(
             autorange='reversed',
@@ -1211,7 +1154,7 @@ def _build_animated_chart(df, val_col, pct_col, abs_col, title, subtitle):
         showlegend=False,
         updatemenus=[dict(
             type='buttons', showactive=False,
-            visible=False,      # hidden — JS clicks it automatically
+            visible=False,
             buttons=[dict(
                 label='Play',
                 method='animate',
@@ -1229,12 +1172,12 @@ def _build_animated_chart(df, val_col, pct_col, abs_col, title, subtitle):
 _g1_chart = _build_animated_chart(
     fac_month, 'VL EHR (BAs)', 'Gap1 %', 'Gap1',
     'Gap 1 — Paper vs EHR (samples not entered into EHR)',
-    f'Worst → best · {sel_month} · 🔴 >30%  🟡 10–30%  🟢 <10%'
+    f'Worst → best · {sel_month} · bars animate in order of severity'
 )
 _g2_chart = _build_animated_chart(
     fac_month, 'VL SHR (Jima)', 'Gap2 %', 'Gap2',
     'Gap 2 — EHR vs SHR (orders not submitted to SHR)',
-    f'Worst → best · {sel_month} · 🔴 >30%  🟡 10–30%  🟢 <10%'
+    f'Worst → best · {sel_month} · bars animate in order of severity'
 )
 
 import plotly.io as _pio
@@ -1288,30 +1231,68 @@ st.markdown('<div style="font-size:14px;font-weight:600;color:#0D1B2A;margin:28p
 col_a, col_b = st.columns(2)
 
 def styled_bar(df_in, bg_col, fg_col, bg_name, fg_name, gap_col, gap_pct_col, title, subtitle):
-    s = df_in.sort_values(gap_col, ascending=False)
+    # Sort by gap % worst first
+    s = df_in.sort_values(gap_pct_col, ascending=True).copy()
+    s = s.reset_index(drop=True)
+
+    pcts  = s[gap_pct_col].fillna(0).tolist()
+    abs_v = s[fg_col].fillna(0).tolist()
+    facs  = s['Facility'].tolist()
+
     colors = []
-    for v in s[gap_pct_col]:
-        if pd.isna(v):     colors.append('#94A3B8')
-        elif v > 30:       colors.append('#EF4444')
-        elif v > 10:       colors.append('#F59E0B')
-        else:              colors.append('#10B981')
+    for v in pcts:
+        if v < 0:    colors.append('#1D4ED8')
+        elif v > 30: colors.append('#EF4444')
+        elif v > 10: colors.append('#F59E0B')
+        else:        colors.append('#10B981')
 
     fig = go.Figure()
-    fig.add_bar(y=s['Facility'], x=s[bg_col], name=bg_name,
-                orientation='h', marker_color='#E2E8F0',
-                hovertemplate='<b>%{y}</b><br>'+bg_name+': %{x:,}<extra></extra>')
-    fig.add_bar(y=s['Facility'], x=s[fg_col], name=fg_name,
-                orientation='h', marker_color=colors,
-                hovertemplate='<b>%{y}</b><br>'+fg_name+': %{x:,}<br>Gap: %{customdata:.1f}%<extra></extra>',
-                customdata=s[gap_pct_col])
+    # Background bar (max reference = 100%)
+    fig.add_bar(
+        y=facs, x=[100]*len(facs), name=bg_name,
+        orientation='h', marker_color='#DBEAFE', opacity=0.4,
+        hoverinfo='skip', showlegend=False,
+    )
+    # Gap % bar
+    fig.add_bar(
+        y=facs, x=[abs(p) for p in pcts], name=fg_name,
+        orientation='h', marker_color=colors,
+        text=[f'{int(abs(v)):,}  ({abs(p):.1f}%)' for v, p in zip(abs_v, pcts)],
+        textposition='outside', textfont=dict(size=9, color='#374151'),
+        customdata=list(zip(abs_v, pcts)),
+        hovertemplate=(
+            '<b>%{y}</b><br>'
+            'Absolute gap: %{customdata[0]:,.0f}<br>'
+            'Gap %: %{customdata[1]:.1f}%'
+            '<extra></extra>'
+        ),
+    )
     fig.update_layout(
-        title=dict(text=f'<b>{title}</b><br><span style="font-size:11px;color:#94A3B8">{subtitle}</span>',
-                   font=dict(size=13), x=0),
-        barmode='overlay', height=420,
-        margin=dict(l=10,r=20,t=60,b=10),
-        legend=dict(orientation='h', yanchor='bottom', y=1.08, font=dict(size=11)),
-        xaxis=dict(title='Sample count', gridcolor='#F1F5F9', tickfont=dict(size=10)),
-        yaxis=dict(tickfont=dict(size=10)),
+        title=dict(
+            text=(
+                f'<b>{title}</b><br>'
+                f'<span style="font-size:10px;color:#64748B">'
+                f'Worst → best &nbsp;·&nbsp; '
+                f'<span style="color:#EF4444">■ >30%</span> &nbsp;'
+                f'<span style="color:#F59E0B">■ 10–30%</span> &nbsp;'
+                f'<span style="color:#10B981">■ <10%</span> &nbsp;'
+                f'<span style="color:#1D4ED8">■ EHR > Paper</span>'
+                f'</span>'
+            ),
+            font=dict(size=13), x=0,
+        ),
+        barmode='overlay',
+        height=max(420, len(facs) * 30 + 120),
+        margin=dict(l=10, r=90, t=72, b=20),
+        showlegend=False,
+        xaxis=dict(
+            range=[0, 110],
+            tickvals=[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+            ticktext=['0%','10%','20%','30%','40%','50%','60%','70%','80%','90%','100%'],
+            gridcolor='#EFF6FF', tickfont=dict(size=10),
+            showline=True, linecolor='#CBD5E1',
+        ),
+        yaxis=dict(tickfont=dict(size=10, color='#374151')),
         plot_bgcolor='white', paper_bgcolor='white',
     )
     return fig
@@ -1331,93 +1312,120 @@ with col_b:
         use_container_width=True)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# MONTHLY TREND + CAPTURE RATE DONUT
-# ─────────────────────────────────────────────────────────────────────────────
-st.markdown('<div style="font-size:14px;font-weight:600;color:#0D1B2A;margin:28px 0 12px;display:flex;align-items:center;gap:8px">📈 Monthly trend & capture rates<span style="flex:1;height:1px;background:#E8EDF3;display:inline-block;margin-left:8px"></span></div>', unsafe_allow_html=True)
-
-col_trend, col_donut = st.columns([2.2, 1])
-
-monthly = dff.groupby('Month', as_index=False).agg(
-    Paper=('VL Paper (BAs)','sum'), EHR=('VL EHR (BAs)','sum'), SHR=('VL SHR (Jima)','sum')
-)
-monthly['Month Date'] = monthly['Month'].map(MONTH_DATES)
-monthly = monthly.sort_values('Month Date')
-monthly['Gap1'] = monthly['Paper'] - monthly['EHR']
-monthly['Gap2'] = monthly['EHR']   - monthly['SHR']
-
-with col_trend:
-    fig_trend = go.Figure()
-    # Fill area between Paper and EHR (gap 1)
-    fig_trend.add_scatter(
-        x=monthly['Month'], y=monthly['Paper'], name='Total VL Collected',
-        mode='lines+markers', line=dict(color='#3B82F6', width=2.5),
-        marker=dict(size=8, color='white', line=dict(color='#3B82F6',width=2)),
-        fill=None)
-    fig_trend.add_scatter(
-        x=monthly['Month'], y=monthly['EHR'], name='EHR (BAs)',
-        mode='lines+markers', line=dict(color='#10B981', width=2.5),
-        marker=dict(size=8, color='white', line=dict(color='#10B981',width=2)),
-        fill='tonexty', fillcolor='rgba(59,130,246,0.07)')
-    fig_trend.add_scatter(
-        x=monthly['Month'], y=monthly['SHR'], name='SHR (Jima)',
-        mode='lines+markers', line=dict(color='#8B5CF6', width=2.5),
-        marker=dict(size=8, color='white', line=dict(color='#8B5CF6',width=2)),
-        fill='tonexty', fillcolor='rgba(16,185,129,0.07)')
-    fig_trend.update_layout(
-        height=300, margin=dict(l=10,r=10,t=20,b=10),
-        legend=dict(orientation='h', yanchor='bottom', y=1.02, font=dict(size=11)),
-        xaxis=dict(gridcolor='#F1F5F9'), yaxis=dict(gridcolor='#F1F5F9', title='Samples'),
-        plot_bgcolor='white', paper_bgcolor='white',
-        hovermode='x unified',
-    )
-    st.plotly_chart(fig_trend, use_container_width=True)
-
-with col_donut:
-    # Funnel/donut showing overall pipeline retention
-    fig_donut = go.Figure(go.Funnel(
-        y=['Paper collected','Captured in EHR','Submitted to SHR'],
-        x=[int(total_paper), int(total_ehr), int(total_shr)],
-        textinfo='value+percent initial',
-        marker=dict(color=['#3B82F6','#10B981','#8B5CF6'],
-                    line=dict(color='white', width=2)),
-        connector=dict(line=dict(color='#F1F5F9', width=1)),
-        textfont=dict(size=11),
-    ))
-    fig_donut.update_layout(
-        title=dict(text='<b>Pipeline retention</b>', font=dict(size=13), x=0.02),
-        height=300, margin=dict(l=10,r=10,t=50,b=10),
-        paper_bgcolor='white', plot_bgcolor='white',
-        showlegend=False,
-    )
-    st.plotly_chart(fig_donut, use_container_width=True)
-
-# ─────────────────────────────────────────────────────────────────────────────
-# LEADERBOARD + DRILLDOWN
+# LEADERBOARD + DRILLDOWN + TREND (combined)
 # ─────────────────────────────────────────────────────────────────────────────
 st.markdown('<div class="sec-hdr">🏆 Leakage leaderboard & facility drilldown</div>',
             unsafe_allow_html=True)
 
-col_lb, col_drill = st.columns([1.3, 1])
+col_lb, col_drill, col_funnel = st.columns([1.3, 1, 0.75])
 
 with col_lb:
     board = fac.sort_values('Gap1 %', ascending=False).reset_index(drop=True)
 
-    def badge(pct):
-        if pd.isna(pct):  return f'<span class="lb-badge badge-purple">N/A</span>'
+    def badge(pct, ehr_val=None, is_gap2=False):
+        if is_gap2 and ehr_val is not None and ehr_val == 0:
+            return '<span class="lb-badge badge-grey">No EHR data</span>'
+        if pd.isna(pct):  return f'<span class="lb-badge badge-grey">N/A</span>'
+        if pct < 0:       return f'<span class="lb-badge badge-blue">{pct:.1f}% ↑</span>'
         if pct > 30:      return f'<span class="lb-badge badge-red">{pct:.1f}%</span>'
         if pct > 10:      return f'<span class="lb-badge badge-amber">{pct:.1f}%</span>'
         return                   f'<span class="lb-badge badge-green">{pct:.1f}%</span>'
 
     def mini_bar(ehr, paper, color):
         pct = min(ehr/paper*100, 100) if paper > 0 else 0
-        return f"""<div style="background:#F1F5F9;border-radius:4px;height:6px;width:100%">
+        return f"""<div style="background:#EFF6FF;border-radius:4px;height:6px;width:100%">
             <div style="background:{color};height:6px;border-radius:4px;width:{pct:.0f}%"></div>
         </div>"""
+
+    def auto_insight(row):
+        """Generate plain-language finding for a facility."""
+        fac   = row['Facility']
+        paper = row['Paper']
+        ehr   = row['EHR']
+        shr   = row['SHR']
+        g1    = row['Gap1']
+        g1p   = row['Gap1 %'] if not pd.isna(row['Gap1 %']) else 0
+        g2    = row['Gap2']
+        g2p   = row['Gap2 %'] if not pd.isna(row['Gap2 %']) else 0
+        parts = []
+
+        # ── Gap 1 finding ─────────────────────────────────────────────────────
+        if ehr == 0 and paper > 0:
+            parts.append(
+                f"🚫 <b>No EHR entries at all.</b> "
+                f"{int(paper):,} samples were collected on paper but none were recorded in the EHR system. "
+                f"That is a 100% gap — the site is not using the digital system."
+            )
+        elif g1p > 30:
+            parts.append(
+                f"⚠️ <b>{g1p:.1f}% of paper samples were not recorded in EHR.</b> "
+                f"Only {int(ehr):,} of {int(paper):,} samples made it into the digital record — "
+                f"{int(g1):,} samples exist on paper but not in EHR."
+            )
+        elif g1p < 0:
+            parts.append(
+                f"🔵 <b>EHR has {abs(g1p):.1f}% more entries than paper records.</b> "
+                f"EHR shows {int(ehr):,} orders but only {int(paper):,} were collected on paper. "
+                f"The extra {int(abs(g1)):,} entries may be duplicates — worth investigating."
+            )
+        elif g1p <= 10:
+            parts.append(
+                f"✅ <b>Only {g1p:.1f}% of paper samples were not captured in EHR.</b> "
+                f"{int(ehr):,} of {int(paper):,} samples recorded — this site is performing well on EHR capture."
+            )
+        else:
+            parts.append(
+                f"🟡 <b>{g1p:.1f}% of paper samples were not recorded in EHR.</b> "
+                f"{int(g1):,} of {int(paper):,} samples are missing from the digital record."
+            )
+
+        # ── Gap 2 finding ─────────────────────────────────────────────────────
+        if ehr == 0:
+            parts.append(
+                "🔗 <b>SHR submission is not possible.</b> "
+                "With no EHR data there is nothing to send to the national SHR system."
+            )
+        elif shr == 0 and ehr > 0:
+            parts.append(
+                f"🚨 <b>100% of EHR orders were never submitted to SHR.</b> "
+                f"{int(ehr):,} records exist in EHR but none have ever reached SHR. "
+                f"The EHR-to-SHR link appears completely broken — this needs urgent technical attention."
+            )
+        elif g2p > 30:
+            parts.append(
+                f"⚠️ <b>{g2p:.1f}% of EHR orders were not submitted to SHR.</b> "
+                f"{int(g2):,} of {int(ehr):,} records did not reach SHR — "
+                f"only {int(shr):,} were successfully submitted."
+            )
+        elif g2p < 0:
+            parts.append(
+                f"🔵 <b>SHR shows {abs(g2p):.1f}% more than EHR.</b> "
+                f"{int(shr):,} SHR records vs {int(ehr):,} EHR orders — "
+                f"some data may be reaching SHR from outside the EHR system."
+            )
+        else:
+            parts.append(
+                f"✅ <b>Only {g2p:.1f}% of EHR orders did not reach SHR.</b> "
+                f"{int(shr):,} of {int(ehr):,} orders were successfully submitted — "
+                f"SHR submission is working well at this site."
+            )
+
+        return "<br><br>".join(parts)
 
     html_rows = ""
     for i, row in board.iterrows():
         critical = ' critical' if (not pd.isna(row['Gap1 %']) and row['Gap1 %'] > 30) else ''
-        rank_icon = ['🥇','🥈','🥉'][i] if i < 3 else f'#{i+1}'
+        g1_pct_val = row['Gap1 %'] if not pd.isna(row['Gap1 %']) else 0
+        if g1_pct_val > 30:
+            rank_icon = '⚠️'
+        elif g1_pct_val > 10:
+            rank_icon = f'#{i+1}'
+        else:
+            rank_icon = ['🥇','🥈','🥉'][i] if i < 3 else f'#{i+1}'
+
+        insight_html = auto_insight(row)
+        fac_id = row['Facility'].replace(' ','_').replace("'","")
+
         html_rows += f"""
         <div class="lb-row{critical}">
           <div class="lb-rank">{rank_icon}</div>
@@ -1425,11 +1433,18 @@ with col_lb:
             <div class="lbn-fac">{row['Facility']}</div>
             <div class="lbn-dist">{row['District']}</div>
           </div>
-          <div class="lb-bars" style="font-size:11px;color:#64748B">
-            Gap 1: {badge(row['Gap1 %'])} &nbsp; Gap 2: {badge(row['Gap2 %'])}
+          <div class="lb-bars" style="font-size:11px;color:#374151">
+            Gap 1: {badge(row['Gap1 %'])} &nbsp; Gap 2: {badge(row['Gap2 %'], ehr_val=row['EHR'], is_gap2=True)}
             <div style="margin-top:5px">{mini_bar(row['EHR'], row['Paper'], '#10B981')}</div>
-            <div style="font-size:9px;color:#CBD5E1;margin-top:2px">EHR capture rate</div>
+            <div style="font-size:9px;color:#64748B;margin-top:2px">EHR capture rate</div>
           </div>
+          <div class="lb-info">
+            <button class="info-btn" onclick="toggleInsight('{fac_id}')"
+                    title="View finding">ℹ️</button>
+          </div>
+        </div>
+        <div class="insight-panel" id="ins_{fac_id}">
+          <div class="insight-body">{insight_html}</div>
         </div>"""
 
     components.html(f"""
@@ -1437,19 +1452,48 @@ with col_lb:
     <style>
     * {{ font-family: 'Inter', sans-serif; box-sizing: border-box; }}
     .lb-row {{ display:flex;align-items:center;padding:10px 14px;border-radius:10px;
-               margin-bottom:6px;gap:12px;background:#FAFBFC;
-               border:1px solid #F1F5F9;transition:background 0.15s; }}
-    .lb-row:hover {{ background:#F1F5F9; }}
-    .lb-rank {{ font-size:13px;font-weight:700;color:#94A3B8;min-width:28px; }}
+               margin-bottom:2px;gap:12px;background:#F5F9FF;
+               border:1px solid #DBEAFE;transition:background 0.15s; }}
+    .lb-row:hover {{ background:#EFF6FF; }}
+    .lb-rank {{ font-size:13px;font-weight:700;color:#64748B;min-width:28px; }}
     .lb-name {{ flex:1; }}
     .lbn-fac {{ font-size:13px;font-weight:600;color:#0D1B2A; }}
-    .lbn-dist {{ font-size:11px;color:#94A3B8; }}
+    .lbn-dist {{ font-size:11px;color:#475569;font-weight:500; }}
     .lb-bars {{ flex:0 0 190px; }}
+    .lb-info {{ flex:0 0 28px;text-align:center; }}
+    .info-btn {{
+        background:none;border:none;cursor:pointer;font-size:16px;
+        opacity:0.6;transition:opacity 0.15s,transform 0.15s;padding:2px;
+        border-radius:50%;
+    }}
+    .info-btn:hover {{ opacity:1;transform:scale(1.2); }}
     .lb-badge {{ font-size:11px;font-weight:700;border-radius:20px;padding:2px 9px;white-space:nowrap; }}
     .badge-red    {{ background:#FFF1F2;color:#BE123C;border:1px solid #FECDD3; }}
     .badge-amber  {{ background:#FFFBEB;color:#B45309;border:1px solid #FDE68A; }}
     .badge-green  {{ background:#F0FDF4;color:#15803D;border:1px solid #BBF7D0; }}
     .badge-purple {{ background:#F5F3FF;color:#6D28D9;border:1px solid #DDD6FE; }}
+    .badge-grey   {{ background:#EFF6FF;color:#64748B;border:1px solid #CBD5E1;font-style:italic; }}
+    .badge-blue   {{ background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE;font-weight:700; }}
+
+    /* insight panel */
+    .insight-panel {{
+        display:none;
+        background:white;
+        border:1px solid #DBEAFE;
+        border-top:3px solid #2E5FA3;
+        border-radius:0 0 10px 10px;
+        padding:14px 16px;
+        margin:-2px 0 8px 0;
+        animation:slideDown 0.2s ease;
+    }}
+    .insight-panel.open {{ display:block; }}
+    @keyframes slideDown {{
+        from {{ opacity:0;transform:translateY(-6px); }}
+        to   {{ opacity:1;transform:translateY(0); }}
+    }}
+    .insight-body {{ font-size:12px;color:#374151;line-height:1.7; }}
+    .insight-body b {{ color:#0F172A; }}
+
     @keyframes pulse-red {{
       0%,100% {{ box-shadow:0 0 0 0 rgba(239,68,68,0); }}
       50%      {{ box-shadow:0 0 0 6px rgba(239,68,68,0.15); }}
@@ -1457,65 +1501,158 @@ with col_lb:
     .critical {{ animation:pulse-red 2.5s ease-in-out infinite;
                  border-color:#FECDD3!important;background:#FFF5F5!important; }}
     </style>
+
+    <script>
+    function toggleInsight(id) {{
+        var panel = document.getElementById('ins_' + id);
+        if (!panel) return;
+        panel.classList.toggle('open');
+    }}
+    </script>
+
     <div>{html_rows}</div>
-    """, height=min(80 * len(board) + 20, 520), scrolling=True)
+    """, height=min(88 * len(board) + 20, 560), scrolling=True)
 
 with col_drill:
-    sel_fac = st.selectbox("Select facility", sorted(dff['Facility'].unique()),
+    # ── Facility drilldown ─────────────────────────────────────────────────────
+    _fac_options = ['⭐ All sites (combined)'] + sorted(dff['Facility'].unique())
+    sel_fac = st.selectbox("Select facility", _fac_options,
                            label_visibility="collapsed")
-    fac_df = dff[dff['Facility'] == sel_fac].sort_values('Month Date')
-    act = fac_df['Activation Date'].iloc[0] if not fac_df.empty else None
-    dist = fac_df['District'].iloc[0] if not fac_df.empty else '—'
-    g1   = fac_df['Gap1'].sum()
-    g2   = fac_df['Gap2'].sum()
-    g1p  = fac_df['Gap1 %'].mean()
-    g2p  = fac_df['Gap2 %'].mean()
 
-    # Mini stat row
+    _all_sites = sel_fac == '⭐ All sites (combined)'
+    fac_df = (
+        dff.groupby('Month', as_index=False).agg(
+            {'VL Paper (BAs)':'sum','VL EHR (BAs)':'sum','VL SHR (Jima)':'sum',
+             'Month Date':'first','Activation Date':'first'}
+        ).sort_values('Month Date')
+        if _all_sites
+        else dff[dff['Facility'] == sel_fac].sort_values('Month Date')
+    )
+    if not _all_sites:
+        fac_df['Gap1']   = fac_df['VL Paper (BAs)'] - fac_df['VL EHR (BAs)']
+        fac_df['Gap2']   = fac_df['VL EHR (BAs)']   - fac_df['VL SHR (Jima)']
+        fac_df['Gap1 %'] = (fac_df['Gap1']/fac_df['VL Paper (BAs)']*100).round(1)
+        fac_df['Gap2 %'] = (fac_df['Gap2']/fac_df['VL EHR (BAs)']*100).round(1)
+
+    act  = None if _all_sites else (fac_df['Activation Date'].iloc[0] if not fac_df.empty else None)
+    dist = f"All {dff['District'].nunique()} districts" if _all_sites else (fac_df['District'].iloc[0] if not fac_df.empty else '—')
+    g1   = (dff['VL Paper (BAs)'].sum() - dff['VL EHR (BAs)'].sum()) if _all_sites else fac_df['Gap1'].sum()
+    g2   = (dff['VL EHR (BAs)'].sum()   - dff['VL SHR (Jima)'].sum()) if _all_sites else fac_df['Gap2'].sum()
+    g1p  = (g1 / dff['VL Paper (BAs)'].sum() * 100) if _all_sites else fac_df['Gap1 %'].mean()
+    g2p  = (g2 / dff['VL EHR (BAs)'].sum()   * 100) if _all_sites else fac_df['Gap2 %'].mean()
+    chart_title = 'All facilities — combined trend' if _all_sites else f'{sel_fac} — monthly trend'
+
     sc1, sc2 = st.columns(2)
     with sc1:
         st.markdown(f"""<div class="drill-stat">
-            <div class="ds-lbl">District</div>
-            <div class="ds-val" style="font-size:15px">{dist}</div>
+            <div class="ds-lbl">{'Scope' if _all_sites else 'District'}</div>
+            <div class="ds-val" style="font-size:14px">{dist}</div>
         </div>
         <div class="drill-stat">
-            <div class="ds-lbl">Gap 1 total</div>
+            <div class="ds-lbl">Gap 1 — Paper vs EHR</div>
             <div class="ds-val" style="color:#F59E0B">{int(g1):,} <span style="font-size:12px">({g1p:.1f}%)</span></div>
         </div>""", unsafe_allow_html=True)
     with sc2:
         st.markdown(f"""<div class="drill-stat">
-            <div class="ds-lbl">Activated</div>
-            <div class="ds-val" style="font-size:15px">{act.strftime('%b %Y') if act else '—'}</div>
+            <div class="ds-lbl">{'Sites' if _all_sites else 'Activated'}</div>
+            <div class="ds-val" style="font-size:14px">{f"{dff['Facility'].nunique()} facilities" if _all_sites else (act.strftime('%b %Y') if act else '—')}</div>
         </div>
         <div class="drill-stat">
-            <div class="ds-lbl">Gap 2 total</div>
+            <div class="ds-lbl">Gap 2 — EHR vs SHR</div>
             <div class="ds-val" style="color:#EF4444">{int(g2):,} <span style="font-size:12px">({g2p:.1f}%)</span></div>
         </div>""", unsafe_allow_html=True)
 
+    # Facility / combined trend
     fig_drill = go.Figure()
-    fig_drill.add_scatter(x=fac_df['Month'], y=fac_df['VL Paper (BAs)'], name='Paper',
-        mode='lines+markers', line=dict(color='#3B82F6',width=2.5),
-        marker=dict(size=9,color='white',line=dict(color='#3B82F6',width=2)))
-    fig_drill.add_scatter(x=fac_df['Month'], y=fac_df['VL EHR (BAs)'],   name='EHR',
-        mode='lines+markers', line=dict(color='#10B981',width=2.5),
-        marker=dict(size=9,color='white',line=dict(color='#10B981',width=2)))
-    fig_drill.add_scatter(x=fac_df['Month'], y=fac_df['VL SHR (Jima)'],  name='SHR',
-        mode='lines+markers', line=dict(color='#8B5CF6',width=2.5),
-        marker=dict(size=9,color='white',line=dict(color='#8B5CF6',width=2)))
+    fig_drill.add_scatter(x=fac_df['Month'], y=fac_df['VL Paper (BAs)'],
+        name='Total VL Collected',
+        mode='lines+markers', line=dict(color='#1F7A4A',width=2.5),
+        marker=dict(size=8,color='white',line=dict(color='#1F7A4A',width=2)),
+        fill=None)
+    fig_drill.add_scatter(x=fac_df['Month'], y=fac_df['VL EHR (BAs)'],
+        name='EHR Captured',
+        mode='lines+markers', line=dict(color='#0891B2',width=2.5),
+        marker=dict(size=8,color='white',line=dict(color='#0891B2',width=2)),
+        fill='tonexty', fillcolor='rgba(31,122,74,0.07)')
+    fig_drill.add_scatter(x=fac_df['Month'], y=fac_df['VL SHR (Jima)'],
+        name='SHR Submitted',
+        mode='lines+markers', line=dict(color='#2E5FA3',width=2.5),
+        marker=dict(size=8,color='white',line=dict(color='#2E5FA3',width=2)),
+        fill='tonexty', fillcolor='rgba(8,145,178,0.07)')
     fig_drill.update_layout(
-        height=220, margin=dict(l=10,r=10,t=10,b=10),
-        legend=dict(orientation='h',yanchor='bottom',y=1.02,font=dict(size=10)),
-        xaxis=dict(gridcolor='#F1F5F9',tickfont=dict(size=9)),
-        yaxis=dict(gridcolor='#F1F5F9',tickfont=dict(size=9)),
+        title=dict(text=f'<b>{chart_title}</b>',
+                   font=dict(size=12), x=0.01),
+        height=280, margin=dict(l=10,r=10,t=60,b=50),
+        legend=dict(orientation='h', yanchor='top', y=-0.18,
+                    font=dict(size=9)),
+        xaxis=dict(gridcolor='#EFF6FF',tickfont=dict(size=9)),
+        yaxis=dict(gridcolor='#EFF6FF',tickfont=dict(size=9)),
         plot_bgcolor='white', paper_bgcolor='white', hovermode='x unified',
     )
     st.plotly_chart(fig_drill, use_container_width=True)
+
+with col_funnel:
+    st.markdown('<div style="font-size:12px;font-weight:600;color:#0D1B2A;'
+                'margin-bottom:8px">📊 Pipeline retention</div>',
+                unsafe_allow_html=True)
+
+    # Funnel responds to facility selection
+    if _all_sites:
+        _fp, _fe, _fs = int(total_paper), int(total_ehr), int(total_shr)
+        _funnel_lbl = 'All facilities'
+    else:
+        _fd = dff[dff['Facility'] == sel_fac]
+        _fp = int(_fd['VL Paper (BAs)'].sum())
+        _fe = int(_fd['VL EHR (BAs)'].sum())
+        _fs = int(_fd['VL SHR (Jima)'].sum())
+        _funnel_lbl = sel_fac
+
+    fig_funnel = go.Figure(go.Funnel(
+        y=['Paper collected', 'Captured in EHR', 'Submitted to SHR'],
+        x=[_fp, _fe, _fs],
+        textinfo='value+percent initial',
+        textfont=dict(size=11),
+        marker=dict(
+            color=['#1F7A4A', '#0891B2', '#2E5FA3'],
+            line=dict(color='white', width=2)
+        ),
+        connector=dict(line=dict(color='#DBEAFE', width=1)),
+    ))
+    fig_funnel.update_layout(
+        title=dict(text=f'<b style="font-size:11px">{_funnel_lbl}</b>',
+                   font=dict(size=11), x=0.02),
+        height=380,
+        margin=dict(l=10, r=10, t=34, b=10),
+        paper_bgcolor='white', plot_bgcolor='white',
+        showlegend=False,
+    )
+    st.plotly_chart(fig_funnel, use_container_width=True)
+
+    _cap = round(_fe/_fp*100,1) if _fp > 0 else 0
+    _sub = round(_fs/_fe*100,1) if _fe > 0 else 0
+    _ret = round(_fs/_fp*100,1) if _fp > 0 else 0
+    st.markdown(f"""
+    <div style="background:#F0F7FF;border-radius:10px;padding:12px 14px;
+                border:1px solid #DBEAFE;font-size:11px;line-height:2.3;">
+        <div style="display:flex;justify-content:space-between">
+            <span style="color:#475569">EHR capture rate</span>
+            <b style="color:#0891B2">{_cap}%</b>
+        </div>
+        <div style="display:flex;justify-content:space-between">
+            <span style="color:#475569">SHR submission rate</span>
+            <b style="color:#2E5FA3">{_sub}%</b>
+        </div>
+        <div style="display:flex;justify-content:space-between">
+            <span style="color:#475569">Overall retention</span>
+            <b style="color:#1E3A5F">{_ret}%</b>
+        </div>
+    </div>""", unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # FOOTER
 # ─────────────────────────────────────────────────────────────────────────────
 st.markdown("""<div style="text-align:center;margin-top:32px;padding:16px;
-    color:#94A3B8;font-size:11px;border-top:1px solid #E8EDF3;">
+    color:#64748B;font-size:11px;border-top:1px solid #E8EDF3;">
     🔴 >30% gap · 🟡 10–30% · 🟢 &lt;10% &nbsp;|&nbsp;
     Analysis starts the month <i>after</i> facility go-live &nbsp;|&nbsp;
     Zim-TTECH · EHR–LIMS Validation

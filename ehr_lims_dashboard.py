@@ -157,73 +157,74 @@ html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
 
 /* ── sidebar ── */
 [data-testid="stSidebar"] {
-    background: linear-gradient(180deg,
-        #0F2744 0px, #1B4070 140px,
-        #EBF3FF 140px, #EBF3FF 100%) !important;
-    border-right: 1.5px solid #93C5FD !important;
+    background: #F8FAFF !important;
+    border-right: 1px solid #DBEAFE !important;
+}
+[data-testid="stSidebar"] > div:first-child {
+    padding-top: 0 !important;
 }
 
-/* Text — dark navy on light background */
+/* Text — scoped tightly to avoid hiding the sidebar collapse toggle in Chrome */
 [data-testid="stSidebar"] label,
 [data-testid="stSidebar"] p,
 [data-testid="stSidebar"] span:not([data-baseweb="tag"] span),
-[data-testid="stSidebar"] div { color: #1E3A5F; }
+[data-testid="stSidebar"] .stMarkdown,
+[data-testid="stSidebar"] .stTextInput label,
+[data-testid="stSidebar"] .stSelectbox label,
+[data-testid="stSidebar"] .stCheckbox label { color: #1E3A5F; }
 
-/* Search input */
+/* Inputs */
 [data-testid="stSidebar"] input {
     background: white !important;
-    border: 1.5px solid #C8D6E5 !important;
-    border-radius: 8px !important;
+    border: 1px solid #CBD5E1 !important;
+    border-radius: 7px !important;
     color: #0F172A !important;
+    font-size: 12px !important;
 }
-[data-testid="stSidebar"] input::placeholder { color: #64748B !important; }
+[data-testid="stSidebar"] input::placeholder { color: #94A3B8 !important; }
 
 /* Multiselect / selectbox */
 [data-testid="stSidebar"] .stMultiSelect > div > div,
 [data-testid="stSidebar"] .stSelectbox > div > div {
     background: white !important;
-    border: 1.5px solid #C8D6E5 !important;
-    border-radius: 8px !important;
+    border: 1px solid #CBD5E1 !important;
+    border-radius: 7px !important;
+    font-size: 12px !important;
 }
 
-/* Selected pills — light blue */
+/* Selected pills */
 [data-testid="stSidebar"] span[data-baseweb="tag"] {
-    background: #DBEAFE !important;
-    border: 1px solid #93C5FD !important;
-    border-radius: 6px !important;
-    padding: 2px 8px !important;
+    background: #EFF6FF !important;
+    border: 1px solid #BFDBFE !important;
+    border-radius: 5px !important;
+    padding: 1px 7px !important;
 }
 [data-testid="stSidebar"] span[data-baseweb="tag"] span {
-    color: #1E3A5F !important;
+    color: #1D4ED8 !important;
     font-size: 11px !important;
-    font-weight: 600 !important;
+    font-weight: 500 !important;
 }
 
-/* ALL buttons — white with navy text */
+/* Buttons */
 [data-testid="stSidebar"] button {
-    background: white !important;
-    color: #1E3A5F !important;
-    border: 1.5px solid #C8D6E5 !important;
+    background: #1E3A5F !important;
+    color: white !important;
+    border: none !important;
     border-radius: 8px !important;
     font-weight: 600 !important;
     font-size: 12px !important;
-    transition: all 0.15s !important;
+    transition: background 0.15s !important;
 }
-[data-testid="stSidebar"] button:hover {
-    background: #1E3A5F !important;
-    color: white !important;
-    border-color: #1E3A5F !important;
-}
-/* Override * for button text specifically */
+[data-testid="stSidebar"] button:hover { background: #0F2744 !important; }
 [data-testid="stSidebar"] button p,
-[data-testid="stSidebar"] button span { color: inherit !important; }
+[data-testid="stSidebar"] button span { color: white !important; }
 
 /* Divider */
-[data-testid="stSidebar"] hr { border-color: #BFDBFE !important; }
+[data-testid="stSidebar"] hr { border-color: #E2E8F0 !important; margin: 10px 0 !important; }
 
 /* Scrollbar */
-[data-testid="stSidebar"]::-webkit-scrollbar { width: 4px; }
-[data-testid="stSidebar"]::-webkit-scrollbar-thumb { background: #C8D6E5; border-radius: 4px; }
+[data-testid="stSidebar"]::-webkit-scrollbar { width: 3px; }
+[data-testid="stSidebar"]::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
 
 /* ── drilldown ── */
 .drill-stat { background: #F0F7FF; border-radius: 10px; padding: 10px 14px; margin-bottom: 8px; border: 1px solid #DBEAFE; }
@@ -388,32 +389,28 @@ else:
 # ─────────────────────────────────────────────────────────────────────────────
 with st.sidebar:
 
-    # Logo + title
+    # ── Header ────────────────────────────────────────────────────────────────
+    _logo_img = f"<img src='{_logo_src}' style='width:32px;height:32px;object-fit:contain;border-radius:6px;background:#E8F0FE;padding:2px;flex-shrink:0;' alt=''/>" if _logo_src else "<span style='font-size:22px'>🔬</span>"
     st.markdown(f"""
-    <div style='display:flex;align-items:center;gap:10px;padding:12px 0 10px'>
-        <img src='{_logo_src}' style='width:40px;height:40px;object-fit:contain;
-             border-radius:8px;background:white;padding:2px;flex-shrink:0;' alt='MoHCC'/>
+    <div style='background:linear-gradient(135deg,#0F2744,#1B4070);
+                border-radius:12px;padding:16px;margin-bottom:16px'>
+      <div style='display:flex;align-items:center;gap:10px;margin-bottom:10px'>
+        {_logo_img}
         <div>
-            <div style='font-size:15px;font-weight:700;color:white;line-height:1.2'>EHR–LIMS</div>
-            <div style='font-size:10px;color:rgba(255,255,255,0.4);margin-top:1px'>Validation Dashboard</div>
+          <div style='font-size:14px;font-weight:700;color:white;line-height:1.2'>EHR–LIMS</div>
+          <div style='font-size:10px;color:rgba(255,255,255,0.5)'>Validation Dashboard</div>
         </div>
-    </div>""", unsafe_allow_html=True)
-    st.markdown("---")
-
-    # Data source + refresh
-    st.markdown("""<div style='display:flex;align-items:center;gap:7px;
-                    background:white;border-radius:8px;border:1px solid #D1DBE8;
-                    padding:8px 10px;margin-bottom:8px'>
-        <span style='font-size:14px'>📡</span>
-        <div>
-            <div style='font-size:11px;font-weight:600;color:#1E3A5F'>
-                Live SharePoint Excel</div>
-            <div style='font-size:9px;color:#64748B;margin-top:1px'>
-                Auto-refreshes every 5 min</div>
+      </div>
+      <div style='display:flex;align-items:center;gap:6px;
+                  background:rgba(255,255,255,0.08);border-radius:7px;padding:7px 10px'>
+        <span style='font-size:13px'>📡</span>
+        <div style='font-size:10px;color:rgba(255,255,255,0.7);line-height:1.4'>
+          Live SharePoint · auto-refresh 5 min
         </div>
+      </div>
     </div>""", unsafe_allow_html=True)
 
-    if st.button("🔄  Refresh now", use_container_width=True):
+    if st.button("🔄  Refresh data", use_container_width=True):
         fetch_sharepoint.clear()
         st.rerun()
 
@@ -436,67 +433,52 @@ with st.sidebar:
 
     # ── FILTERS ───────────────────────────────────────────────────────────────
     all_districts = sorted(df['District'].unique())
-    all_facs      = sorted(df['Facility'].unique())
 
-    st.markdown("<p style='font-size:11px;font-weight:800;color:#1E3A5F;"
-                "letter-spacing:0.8px;text-transform:uppercase;margin-bottom:8px'>"
-                "🔍 Filters</p>", unsafe_allow_html=True)
+    st.markdown("<p style='font-size:10px;font-weight:700;color:#475569;"
+                "letter-spacing:0.8px;text-transform:uppercase;margin:0 0 10px'>Filters</p>",
+                unsafe_allow_html=True)
 
-    with st.form("sidebar_filters"):
+    # ── Month range ───────────────────────────────────────────────────────────
+    st.markdown("<p style='font-size:10px;font-weight:600;color:#64748B;margin:0 0 4px'>Month range</p>",
+                unsafe_allow_html=True)
+    col_m1, col_m2 = st.columns(2)
+    m_start = col_m1.selectbox("From", MONTHS, index=0, label_visibility="collapsed")
+    m_end   = col_m2.selectbox("To",   MONTHS, index=len(MONTHS)-1, label_visibility="collapsed")
 
-        # Quick search — filters both district & facility lists
-        search = st.text_input(
-            "Search", placeholder="Type district or facility…",
-            label_visibility="collapsed",
-        )
+    st.markdown("<div style='height:4px'></div>", unsafe_allow_html=True)
 
-        st.markdown("<p style='font-size:10px;font-weight:700;color:#1E3A5F;"
-                    "letter-spacing:0.5px;margin:10px 0 4px'>DISTRICT</p>",
-                    unsafe_allow_html=True)
-        dist_opts = [d for d in all_districts
-                     if not search or search.lower() in d.lower()]
-        sel_districts = st.multiselect(
-            "District", all_districts, default=all_districts,
-            label_visibility="collapsed",
-            placeholder="Select districts…",
-        )
+    # ── District multiselect ──────────────────────────────────────────────────
+    sel_districts = st.multiselect(
+        "District",
+        options=all_districts,
+        default=all_districts,
+        placeholder="Select districts…",
+    )
+    if not sel_districts:
+        sel_districts = all_districts
 
-        st.markdown("<p style='font-size:10px;font-weight:700;color:#1E3A5F;"
-                    "letter-spacing:0.5px;margin:10px 0 4px'>FACILITY</p>",
-                    unsafe_allow_html=True)
-        fac_pool = sorted(df[df['District'].isin(sel_districts)]['Facility'].unique())
-        if search:
-            fac_pool_search = [f for f in fac_pool if search.lower() in f.lower()]
-        else:
-            fac_pool_search = fac_pool
-        sel_facilities = st.multiselect(
-            "Facility", fac_pool, default=fac_pool_search,
-            label_visibility="collapsed",
-            placeholder="Type or select facility…",
-        )
+    # ── Facility multiselect (cascades from district) ─────────────────────────
+    fac_pool = sorted(df[df['District'].isin(sel_districts)]['Facility'].unique())
+    sel_facilities = st.multiselect(
+        "Facility",
+        options=fac_pool,
+        default=fac_pool,
+        placeholder="Select facilities…",
+    )
+    if not sel_facilities:
+        sel_facilities = fac_pool
 
-        st.markdown("<p style='font-size:10px;font-weight:700;color:#1E3A5F;"
-                    "letter-spacing:0.5px;margin:10px 0 4px'>MONTH RANGE</p>",
-                    unsafe_allow_html=True)
-        _m1, _m2 = st.columns(2)
-        m_start = _m1.selectbox("From", MONTHS, index=0, label_visibility="collapsed")
-        m_end   = _m2.selectbox("To", MONTHS, index=len(MONTHS)-1, label_visibility="collapsed")
-
-        st.form_submit_button("✓  Apply Filters", use_container_width=True)
-
-    # Summary
+    # ── Summary chip ──────────────────────────────────────────────────────────
     n_sel_fac    = len(sel_facilities)
     n_sel_months = len(MONTHS[MONTHS.index(m_start): MONTHS.index(m_end)+1])
     st.markdown(f"""
-    <div style='margin-top:12px;background:white;border-radius:10px;
-        border:1px solid #93C5FD;padding:10px 12px;'>
-      <div style='font-size:10px;color:#374151;line-height:2.2'>
-        <span style='color:#059669;font-weight:700'>✓</span>
-        <b style='color:#1E3A5F'> {n_sel_fac}</b> facilities &nbsp;·&nbsp;
-        <b style='color:#1E3A5F'>{n_sel_months}</b> months<br>
-        <span style='color:#D4841A'>●</span> Gap 1 — Paper vs EHR<br>
+    <div style='margin-top:10px;background:white;border-radius:8px;
+        border:1px solid #E2E8F0;padding:10px 12px;font-size:11px;
+        color:#475569;line-height:2'>
+        <b style='color:#1E3A5F'>{n_sel_fac}</b> facilities &nbsp;·&nbsp;
+        <b style='color:#1E3A5F'>{n_sel_months}</b> months selected<br>
+        <span style='color:#F59E0B'>●</span> Gap 1 — Paper vs EHR &nbsp;
         <span style='color:#EF4444'>●</span> Gap 2 — EHR vs SHR
-      </div>
     </div>""", unsafe_allow_html=True)
 
 
@@ -1088,6 +1070,18 @@ def _build_animated_chart(df, val_col, pct_col, abs_col, title, subtitle):
     s = df.dropna(subset=[pct_col]).sort_values(pct_col, ascending=False)
     s = s.reset_index(drop=True)
 
+    # Guard: if no valid rows, return an empty placeholder figure
+    if s.empty:
+        fig = go.Figure()
+        fig.update_layout(
+            title=dict(text=f'<b>{title}</b>', font=dict(size=13), x=0.01),
+            height=200, plot_bgcolor='white', paper_bgcolor='white',
+            annotations=[dict(text='No data available for selected filters',
+                              xref='paper', yref='paper', x=0.5, y=0.5,
+                              showarrow=False, font=dict(size=13, color='#64748B'))],
+        )
+        return fig
+
     facs   = s['Facility'].tolist()
     pcts   = s[pct_col].tolist()
     absv   = s[abs_col].tolist()
@@ -1139,7 +1133,7 @@ def _build_animated_chart(df, val_col, pct_col, abs_col, title, subtitle):
             gridcolor='#EFF6FF', zeroline=True,
             zerolinecolor='#CBD5E1', zerolinewidth=1.5,
             showline=True, linecolor='#CBD5E1', linewidth=1,
-            range=[-5, max(max(pcts) + 25, 20)],
+            range=[-5, max((max(pcts) if pcts else 0) + 25, 20)],
         ),
         yaxis=dict(
             autorange='reversed',
@@ -1435,8 +1429,14 @@ with col_lb:
             <div style="font-size:9px;color:#64748B;margin-top:2px">EHR capture rate</div>
           </div>
           <div class="lb-info">
-            <button class="info-btn" onclick="toggleInsight('{fac_id}')"
-                    title="View finding">ℹ️</button>
+            <button class="info-btn" onclick="toggleInsight('{fac_id}', '{row['Facility']}', '{row['District']}')"
+                    title="View finding">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="7" cy="7" r="6.25" stroke="#3B82F6" stroke-width="1.5"/>
+                <rect x="6.25" y="6" width="1.5" height="4.5" rx="0.75" fill="#3B82F6"/>
+                <circle cx="7" cy="3.75" r="0.85" fill="#3B82F6"/>
+              </svg>
+            </button>
           </div>
         </div>
         <div class="insight-panel" id="ins_{fac_id}">
@@ -1458,11 +1458,17 @@ with col_lb:
     .lb-bars {{ flex:0 0 190px; }}
     .lb-info {{ flex:0 0 28px;text-align:center; }}
     .info-btn {{
-        background:none;border:none;cursor:pointer;font-size:16px;
-        opacity:0.6;transition:opacity 0.15s,transform 0.15s;padding:2px;
-        border-radius:50%;
+        background:#EFF6FF;border:1.5px solid #BFDBFE;
+        cursor:pointer;padding:0;
+        border-radius:50%;width:26px;height:26px;
+        display:flex;align-items:center;justify-content:center;
+        transition:background 0.15s,border-color 0.15s,transform 0.15s;
+        flex-shrink:0;
     }}
-    .info-btn:hover {{ opacity:1;transform:scale(1.2); }}
+    .info-btn:hover {{
+        background:#DBEAFE;border-color:#93C5FD;transform:scale(1.1);
+    }}
+    .info-btn svg {{ display:block; }}
     .lb-badge {{ font-size:11px;font-weight:700;border-radius:20px;padding:2px 9px;white-space:nowrap; }}
     .badge-red    {{ background:#FFF1F2;color:#BE123C;border:1px solid #FECDD3; }}
     .badge-amber  {{ background:#FFFBEB;color:#B45309;border:1px solid #FDE68A; }}
@@ -1471,24 +1477,8 @@ with col_lb:
     .badge-grey   {{ background:#EFF6FF;color:#64748B;border:1px solid #CBD5E1;font-style:italic; }}
     .badge-blue   {{ background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE;font-weight:700; }}
 
-    /* insight panel */
-    .insight-panel {{
-        display:none;
-        background:white;
-        border:1px solid #DBEAFE;
-        border-top:3px solid #2E5FA3;
-        border-radius:0 0 10px 10px;
-        padding:14px 16px;
-        margin:-2px 0 8px 0;
-        animation:slideDown 0.2s ease;
-    }}
-    .insight-panel.open {{ display:block; }}
-    @keyframes slideDown {{
-        from {{ opacity:0;transform:translateY(-6px); }}
-        to   {{ opacity:1;transform:translateY(0); }}
-    }}
-    .insight-body {{ font-size:12px;color:#374151;line-height:1.7; }}
-    .insight-body b {{ color:#0F172A; }}
+    /* insight panel — hidden data store */
+    .insight-panel {{ display:none; }}
 
     @keyframes pulse-red {{
       0%,100% {{ box-shadow:0 0 0 0 rgba(239,68,68,0); }}
@@ -1496,13 +1486,68 @@ with col_lb:
     }}
     .critical {{ animation:pulse-red 2.5s ease-in-out infinite;
                  border-color:#FECDD3!important;background:#FFF5F5!important; }}
+
+    /* Modal overlay */
+    .modal-overlay {{
+        display:none;position:fixed;inset:0;
+        background:rgba(15,23,42,0.5);
+        z-index:9999;
+        animation:fadeIn 0.15s ease;
+    }}
+    .modal-overlay.open {{
+        display:flex;align-items:center;justify-content:center;
+    }}
+    @keyframes fadeIn {{ from{{opacity:0}} to{{opacity:1}} }}
+    .modal-box {{
+        background:white;border-radius:14px;
+        padding:24px 26px 22px;
+        max-width:400px;width:88%;
+        box-shadow:0 24px 64px rgba(0,0,0,0.3);
+        position:relative;
+        animation:popUp 0.2s cubic-bezier(0.34,1.56,0.64,1);
+    }}
+    @keyframes popUp {{
+        from{{opacity:0;transform:scale(0.85)}}
+        to  {{opacity:1;transform:scale(1)}}
+    }}
+    .modal-close {{
+        position:absolute;top:12px;right:14px;
+        background:#F1F5F9;border:none;border-radius:50%;
+        width:26px;height:26px;font-size:14px;
+        cursor:pointer;color:#64748B;
+        display:flex;align-items:center;justify-content:center;
+        transition:background 0.1s;
+    }}
+    .modal-close:hover {{ background:#E2E8F0;color:#0F172A; }}
+    .modal-fac  {{ font-size:15px;font-weight:700;color:#0D1B2A;margin-bottom:3px; }}
+    .modal-dist {{ font-size:11px;color:#64748B;margin-bottom:12px; }}
+    .modal-hr   {{ height:1px;background:#E8EDF3;margin-bottom:14px; }}
+    .modal-body {{ font-size:13px;color:#374151;line-height:1.9; }}
+    .modal-body b {{ color:#0F172A; }}
     </style>
 
+    <!-- Single shared modal -->
+    <div class="modal-overlay" id="insight-modal" onclick="if(event.target===this)closeModal()">
+      <div class="modal-box">
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <div class="modal-fac"  id="modal-fac"></div>
+        <div class="modal-dist" id="modal-dist"></div>
+        <div class="modal-hr"></div>
+        <div class="modal-body" id="modal-body"></div>
+      </div>
+    </div>
+
     <script>
-    function toggleInsight(id) {{
+    function toggleInsight(id, fac, dist) {{
         var panel = document.getElementById('ins_' + id);
         if (!panel) return;
-        panel.classList.toggle('open');
+        document.getElementById('modal-fac').textContent  = fac;
+        document.getElementById('modal-dist').textContent = dist;
+        document.getElementById('modal-body').innerHTML   = panel.innerHTML;
+        document.getElementById('insight-modal').classList.add('open');
+    }}
+    function closeModal() {{
+        document.getElementById('insight-modal').classList.remove('open');
     }}
     </script>
 

@@ -14,24 +14,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Force sidebar always visible
-st.markdown("""
-<style>
-    [data-testid="collapsedControl"] { display: none !important; }
-    [data-testid="stSidebar"] {
-        min-width: 280px !important;
-        max-width: 320px !important;
-        transform: none !important;
-        visibility: visible !important;
-    }
-    [data-testid="stSidebar"][aria-expanded="false"] {
-        transform: none !important;
-        margin-left: 0 !important;
-        min-width: 280px !important;
-    }
-    .main .block-container { padding-left: 1rem; }
-</style>
-""", unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # GLOBAL STYLES
@@ -175,8 +157,10 @@ html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
 
 /* ── sidebar ── */
 [data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #1E3A5F 0%, #1E3A5F 160px, #F0F4F8 160px) !important;
-    border-right: 1px solid #D1DBE8 !important;
+    background: linear-gradient(180deg,
+        #0F2744 0px, #1B4070 140px,
+        #EBF3FF 140px, #EBF3FF 100%) !important;
+    border-right: 1.5px solid #93C5FD !important;
 }
 
 /* Text — dark navy on light background */
@@ -450,36 +434,49 @@ with st.sidebar:
 
     df = load_data(file_bytes)
 
-    # ── FILTERS (wrapped in form — only reruns on Apply) ─────────────────────
+    # ── FILTERS ───────────────────────────────────────────────────────────────
     all_districts = sorted(df['District'].unique())
+    all_facs      = sorted(df['Facility'].unique())
 
-    st.markdown("<p style='font-size:11px;font-weight:700;color:#475569;"
-                "letter-spacing:0.7px;text-transform:uppercase;margin-bottom:8px'>"
+    st.markdown("<p style='font-size:11px;font-weight:800;color:#1E3A5F;"
+                "letter-spacing:0.8px;text-transform:uppercase;margin-bottom:8px'>"
                 "🔍 Filters</p>", unsafe_allow_html=True)
 
     with st.form("sidebar_filters"):
 
-        st.markdown("<p style='font-size:10px;font-weight:700;color:#64748B;"
-                    "letter-spacing:0.5px;margin:0 0 4px'>DISTRICT</p>",
+        # Quick search — filters both district & facility lists
+        search = st.text_input(
+            "Search", placeholder="Type district or facility…",
+            label_visibility="collapsed",
+        )
+
+        st.markdown("<p style='font-size:10px;font-weight:700;color:#1E3A5F;"
+                    "letter-spacing:0.5px;margin:10px 0 4px'>DISTRICT</p>",
                     unsafe_allow_html=True)
+        dist_opts = [d for d in all_districts
+                     if not search or search.lower() in d.lower()]
         sel_districts = st.multiselect(
             "District", all_districts, default=all_districts,
             label_visibility="collapsed",
             placeholder="Select districts…",
         )
 
-        st.markdown("<p style='font-size:10px;font-weight:700;color:#64748B;"
-                    "letter-spacing:0.5px;margin:14px 0 4px'>FACILITY</p>",
+        st.markdown("<p style='font-size:10px;font-weight:700;color:#1E3A5F;"
+                    "letter-spacing:0.5px;margin:10px 0 4px'>FACILITY</p>",
                     unsafe_allow_html=True)
         fac_pool = sorted(df[df['District'].isin(sel_districts)]['Facility'].unique())
+        if search:
+            fac_pool_search = [f for f in fac_pool if search.lower() in f.lower()]
+        else:
+            fac_pool_search = fac_pool
         sel_facilities = st.multiselect(
-            "Facility", fac_pool, default=fac_pool,
+            "Facility", fac_pool, default=fac_pool_search,
             label_visibility="collapsed",
             placeholder="Type or select facility…",
         )
 
-        st.markdown("<p style='font-size:10px;font-weight:700;color:#64748B;"
-                    "letter-spacing:0.5px;margin:14px 0 4px'>MONTH RANGE</p>",
+        st.markdown("<p style='font-size:10px;font-weight:700;color:#1E3A5F;"
+                    "letter-spacing:0.5px;margin:10px 0 4px'>MONTH RANGE</p>",
                     unsafe_allow_html=True)
         _m1, _m2 = st.columns(2)
         m_start = _m1.selectbox("From", MONTHS, index=0, label_visibility="collapsed")
@@ -487,22 +484,21 @@ with st.sidebar:
 
         st.form_submit_button("✓  Apply Filters", use_container_width=True)
 
-    # Summary card (outside form)
+    # Summary
     n_sel_fac    = len(sel_facilities)
     n_sel_months = len(MONTHS[MONTHS.index(m_start): MONTHS.index(m_end)+1])
     st.markdown(f"""
-    <div style='margin-top:12px;background:#F0F7FF;border-radius:12px;
-        border:1px solid #DBEAFE;padding:12px 14px;
-        box-shadow:0 1px 4px rgba(0,0,0,0.04)'>
-      <div style='font-size:11px;color:#475569;line-height:2.2'>
+    <div style='margin-top:12px;background:white;border-radius:10px;
+        border:1px solid #93C5FD;padding:10px 12px;'>
+      <div style='font-size:10px;color:#374151;line-height:2.2'>
         <span style='color:#059669;font-weight:700'>✓</span>
-        <b style='color:#1E3A5F'> {n_sel_fac}</b> facilities &nbsp;
-        <span style='color:#2E5FA3;font-weight:700'>▪</span>
-        <b style='color:#1E3A5F'> {n_sel_months}</b> months<br>
+        <b style='color:#1E3A5F'> {n_sel_fac}</b> facilities &nbsp;·&nbsp;
+        <b style='color:#1E3A5F'>{n_sel_months}</b> months<br>
         <span style='color:#D4841A'>●</span> Gap 1 — Paper vs EHR<br>
         <span style='color:#EF4444'>●</span> Gap 2 — EHR vs SHR
       </div>
     </div>""", unsafe_allow_html=True)
+
 
 if df.empty:
     st.error("No data parsed. Check the file format.")

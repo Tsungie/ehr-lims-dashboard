@@ -447,23 +447,23 @@ with st.sidebar:
 
     st.markdown("<div style='height:4px'></div>", unsafe_allow_html=True)
 
-    # ── District multiselect ──────────────────────────────────────────────────
+    # ── District multiselect — empty = all ──────────────────────────────────
     sel_districts = st.multiselect(
         "District",
         options=all_districts,
-        default=all_districts,
-        placeholder="Select districts…",
+        default=[],
+        placeholder="All districts — type to filter…",
     )
     if not sel_districts:
         sel_districts = all_districts
 
-    # ── Facility multiselect (cascades from district) ─────────────────────────
+    # ── Facility multiselect — empty = all ───────────────────────────────────
     fac_pool = sorted(df[df['District'].isin(sel_districts)]['Facility'].unique())
     sel_facilities = st.multiselect(
         "Facility",
         options=fac_pool,
-        default=fac_pool,
-        placeholder="Select facilities…",
+        default=[],
+        placeholder="All facilities — type to filter…",
     )
     if not sel_facilities:
         sel_facilities = fac_pool

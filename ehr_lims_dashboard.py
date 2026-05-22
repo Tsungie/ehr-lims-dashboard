@@ -710,7 +710,7 @@ body {{ background: transparent; padding: 5px; }}
                     Not recorded in EHR
                 </div>
                 <div class="gap-pill pill-orange" style="margin-top:6px;display:inline-block;">
-                    GAP 1 · {gap1_pct}% Loss
+                    GAP 1 — {gap1_pct}% Loss
                 </div>
             </div>
         </div>
@@ -734,7 +734,7 @@ body {{ background: transparent; padding: 5px; }}
                     Not submitted to SHR
                 </div>
                 <div class="gap-pill pill-blue" style="margin-top:6px;display:inline-block;">
-                    GAP 2 · {gap2_pct}% Loss
+                    GAP 2 — {gap2_pct}% Loss
                 </div>
             </div>
         </div>
@@ -1648,10 +1648,17 @@ with col_funnel:
         _fs = int(_fd['VL SHR (Jima)'].sum())
         _funnel_lbl = sel_fac
 
+    _pct_ehr = round(_fe / _fp * 100) if _fp > 0 else 0
+    _pct_shr = round(_fs / _fp * 100) if _fp > 0 else 0
     fig_funnel = go.Figure(go.Funnel(
         y=['Paper collected', 'Captured in EHR', 'Submitted to SHR'],
         x=[_fp, _fe, _fs],
-        textinfo='value+percent initial',
+        text=[
+            f"{_fp:,}<br>100%",
+            f"{_fe:,}<br>{_pct_ehr}%",
+            f"{_fs:,}<br>{_pct_shr}%",
+        ],
+        textinfo='text',
         textfont=dict(size=11),
         marker=dict(
             color=['#1F7A4A', '#0891B2', '#2E5FA3'],

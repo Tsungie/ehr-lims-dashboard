@@ -374,6 +374,44 @@ def load_data(file_bytes: bytes) -> pd.DataFrame:
                     (df['Gap2']/df['VL EHR (BAs)']*100).round(1), np.nan)
     return df
 
+# ─────────────────────────────────────────────────────────────────────────────
+# LOAD REASONS SHEET
+# ─────────────────────────────────────────────────────────────────────────────
+def load_reasons(file_bytes: bytes) -> pd.DataFrame:
+    """Parse the Reasons sheet into a tidy (Facility, Month, Reason) DataFrame."""
+    try:
+        raw = pd.read_excel(io.BytesIO(file_bytes), sheet_name='Reasons',
+                            header=None, dtype=str)
+    except Exception:
+        return pd.DataFrame(columns=['Facility', 'Month', 'Reason'])
+
+    # Row 3 (index 3) contains month headers starting at column B (index 1)
+    month_row = raw.iloc[3]
+    # Build mapping: col_index -> month label (e.g. "Oct-25")
+    col_to_month = {}
+    for col_idx in range(1, len(month_row)):
+        cell = str(month_row[col_idx]).strip()
+        if cell and cell != 'nan':
+            # Normalise to match MONTHS list format
+            try:
+                parsed = pd.to_datetime(cell)
+                label = parsed.strftime('%b-%y')
+                col_to_month[col_idx] = label
+            except Exception:
+                col_to_month[col_idx] = cell
+
+    records = []
+    for row_idx in range(4, len(raw)):  # data starts at row index 4
+        fac = str(raw.iloc[row_idx, 0]).strip()
+        if not fac or fac == 'nan':
+            continue
+        for col_idx, month in col_to_month.items():
+            val = str(raw.iloc[row_idx, col_idx]).strip()
+            if val and val not in ('nan', '-', 'N/A', ''):
+                records.append({'Facility': fac, 'Month': month, 'Reason': val})
+
+    return pd.DataFrame(records)
+
 # Load MoHCC logo as base64 so it works offline inside components.html
 # ─────────────────────────────────────────────────────────────────────────────
 import base64 as _b64, os as _os
@@ -430,6 +468,7 @@ with st.sidebar:
         st.stop()
 
     df = load_data(file_bytes)
+    df_reasons = load_reasons(file_bytes)
 
     # ── FILTERS ───────────────────────────────────────────────────────────────
     all_districts = sorted(df['District'].unique())
@@ -613,6 +652,73 @@ body {{ background: transparent; padding: 5px; }}
 .kc-lbl {{ font-size: 10px; font-weight: 800; color: #0F172A; text-transform: uppercase; letter-spacing: 0.3px; }}
 .kc-sub {{ font-size: 10px; color: #64748B; margin-top: 2px; }}
 
+/* ── Gap 2 Why button ── */
+.why-btn {{
+    display: inline-flex; align-items: center; gap: 4px;
+    margin-left: 8px; padding: 3px 9px;
+    background: #EFF6FF; border: 1.5px solid #93C5FD;
+    border-radius: 20px; cursor: pointer;
+    font-size: 10px; font-weight: 700; color: #1D4ED8;
+    transition: background 0.15s, border-color 0.15s;
+    vertical-align: middle;
+}}
+.why-btn:hover {{ background: #DBEAFE; border-color: #3B82F6; }}
+
+/* ── Gap 2 reasons modal ── */
+.g2-overlay {{
+    display: none; position: fixed; inset: 0;
+    background: rgba(15,23,42,0.5);
+    z-index: 9999;
+    animation: g2fade 0.15s ease;
+}}
+.g2-overlay.open {{ display: flex; align-items: center; justify-content: center; }}
+@keyframes g2fade {{ from{{opacity:0}} to{{opacity:1}} }}
+.g2-box {{
+    background: white; border-radius: 16px;
+    padding: 28px 30px 24px; max-width: 480px; width: 92%;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.28);
+    position: relative;
+    animation: g2pop 0.2s cubic-bezier(0.34,1.56,0.64,1);
+}}
+@keyframes g2pop {{
+    from{{opacity:0;transform:scale(0.87)}} to{{opacity:1;transform:scale(1)}}
+}}
+.g2-close {{
+    position: absolute; top: 14px; right: 16px;
+    background: #F1F5F9; border: none; border-radius: 50%;
+    width: 28px; height: 28px; font-size: 14px; cursor: pointer;
+    color: #64748B; display: flex; align-items: center; justify-content: center;
+    transition: background 0.1s;
+}}
+.g2-close:hover {{ background: #E2E8F0; color: #0F172A; }}
+.g2-badge {{
+    display: inline-block; background: #EFF6FF; border: 1px solid #BFDBFE;
+    color: #1D4ED8; font-size: 10px; font-weight: 700;
+    padding: 3px 10px; border-radius: 20px; margin-bottom: 12px;
+    letter-spacing: 0.4px; text-transform: uppercase;
+}}
+.g2-title {{
+    font-size: 16px; font-weight: 800; color: #0D1B2A;
+    margin-bottom: 4px; line-height: 1.3;
+}}
+.g2-subtitle {{
+    font-size: 12px; color: #64748B; margin-bottom: 18px;
+}}
+.g2-hr {{ height: 1px; background: #E8EDF3; margin-bottom: 18px; }}
+.g2-reason {{
+    display: flex; gap: 14px; margin-bottom: 16px; align-items: flex-start;
+}}
+.g2-reason:last-child {{ margin-bottom: 0; }}
+.g2-num {{
+    flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%;
+    background: #1D4ED8; color: white;
+    font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 1px;
+}}
+.g2-reason-body {{ font-size: 12.5px; color: #374151; line-height: 1.75; }}
+.g2-reason-body b {{ color: #0D1B2A; }}
+
 </style>
 
 <div class="dashboard-wrapper">
@@ -733,10 +839,44 @@ body {{ background: transparent; padding: 5px; }}
                 <div style="font-size:11px;font-weight:700;color:#2E5FA3;white-space:nowrap;">
                     Not submitted to SHR
                 </div>
-                <div class="gap-pill pill-blue" style="margin-top:6px;display:inline-block;">
-                    GAP 2 — {gap2_pct}% Loss
+                <div style="display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap;">
+                    <div class="gap-pill pill-blue" style="display:inline-block;">
+                        GAP 2 — {gap2_pct}% Loss
+                    </div>
+                    <button class="why-btn" onclick="document.getElementById('g2-modal').classList.add('open')">
+                        ❓ Why?
+                    </button>
                 </div>
             </div>
+        </div>
+
+        <!-- ── Gap 2 reasons modal ── -->
+        <div class="g2-overlay" id="g2-modal" onclick="if(event.target===this)document.getElementById('g2-modal').classList.remove('open')">
+          <div class="g2-box">
+            <button class="g2-close" onclick="document.getElementById('g2-modal').classList.remove('open')">✕</button>
+            <div class="g2-badge">GAP 2 — EHR vs SHR</div>
+            <div class="g2-title">Why are orders not reaching the SHR?</div>
+            <div class="g2-subtitle">Main reasons orders are not pushed — or are pushed late — to the Shared Health Record</div>
+            <div class="g2-hr"></div>
+            <div class="g2-reason">
+              <div class="g2-num">1</div>
+              <div class="g2-reason-body">
+                <b>Network connectivity challenges</b> at the facility, server, or both.
+                In most cases, once connectivity is restored, the electronic orders are
+                <b>automatically pushed to the SHR.</b>
+              </div>
+            </div>
+            <div class="g2-reason">
+              <div class="g2-num">2</div>
+              <div class="g2-reason-body">
+                <b>System misconfiguration issues.</b> For example, during system upgrades,
+                a site previously configured for LIMS integration may inadvertently be
+                <b>turned off</b> — during which time orders are not pushed to the SHR at all,
+                resulting in <b>lost orders.</b> Transmission only resumes for new orders once
+                the configuration issue is identified and corrected.
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- ── 6,519 above SHR ── -->
@@ -1327,7 +1467,7 @@ with col_lb:
             <div style="background:{color};height:6px;border-radius:4px;width:{pct:.0f}%"></div>
         </div>"""
 
-    def auto_insight(row):
+    def auto_insight(row, reasons_for_fac=None):
         """Generate plain-language finding for a facility."""
         fac   = row['Facility']
         paper = row['Paper']
@@ -1400,6 +1540,18 @@ with col_lb:
                 f"SHR submission is working well at this site."
             )
 
+        # ── Gap 2 reasons from Reasons sheet ────────────────────────────────
+        if reasons_for_fac:
+            reasons_html = "".join(
+                f'<div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;">' +
+                f'<span style="flex-shrink:0;background:#2E5FA3;color:white;border-radius:50%;width:20px;height:20px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;">{idx+1}</span>' +
+                f'<span style="font-size:12px;color:#374151;line-height:1.7;">{r["Month"]}: <b>{r["Reason"]}</b></span></div>'
+                for idx, r in enumerate(reasons_for_fac)
+            )
+            parts.append(
+                f'📋 <b>Reported reasons for Gap 2 at this facility:</b><br>' +
+                f'<div style="margin-top:8px;">{reasons_html}</div>'
+            )
         return "<br><br>".join(parts)
 
     html_rows = ""
@@ -1413,7 +1565,15 @@ with col_lb:
         else:
             rank_icon = ['🥇','🥈','🥉'][i] if i < 3 else f'#{i+1}'
 
-        insight_html = auto_insight(row)
+        # Gather per-month reasons for this facility from Reasons sheet
+        _fac_reasons = []
+        if not df_reasons.empty:
+            _fac_r = df_reasons[df_reasons['Facility'] == row['Facility']]
+            # Only include months in the selected range
+            _sel_months_set = set(MONTHS[MONTHS.index(m_start): MONTHS.index(m_end)+1])
+            _fac_reasons = _fac_r[_fac_r['Month'].isin(_sel_months_set)].to_dict('records')
+
+        insight_html = auto_insight(row, reasons_for_fac=_fac_reasons)
         fac_id = row['Facility'].replace(' ','_').replace("'","")
 
         html_rows += f"""
